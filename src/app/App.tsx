@@ -17,7 +17,7 @@ import { LanguagesEditor } from '../features/editor/components/LanguagesEditor'
 import { InterestsEditor } from '../features/editor/components/InterestsEditor'
 import { ReferencesEditor } from '../features/editor/components/ReferencesEditor'
 import { CustomSectionEditor } from '../features/editor/components/CustomSectionEditor'
-import { PagedPreview } from '../features/preview/components/CvPreview'
+import { PagedPreview } from '../features/preview/components/PagedPreview'
 
 type SectionType = CvDocument['sections'][number]['type']
 
