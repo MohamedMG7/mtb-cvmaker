@@ -84,10 +84,7 @@ export const EducationEditor = () => {
                   updateEducation(
                     item.id,
                     'details',
-                    event.target.value
-                      .split('\n')
-                      .map((line) => line.trim())
-                      .filter(Boolean),
+                    event.target.value.split('\n'),
                   )
                 }
               />

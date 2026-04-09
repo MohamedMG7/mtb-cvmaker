@@ -31,6 +31,8 @@ const formatRange = (startDate: string, endDate: string, current?: boolean) => {
   return [startDate, endLabel].filter(Boolean).join(' - ')
 }
 
+const nonEmptyLines = (values: string[]) => values.filter((value) => value.trim().length > 0)
+
 type HeaderLink = {
   label: string
   url: string
@@ -229,7 +231,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
         section.items.forEach((item) => {
           children.push(leftRightLine(item.school, item.location, formatRange(item.startDate, item.endDate)))
           children.push(bodyLine(item.degree))
-          item.details.forEach((detail) => children.push(bodyLine(detail)))
+          nonEmptyLines(item.details).forEach((detail) => children.push(bodyLine(detail)))
         })
         break
       case 'experience':
@@ -238,7 +240,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
         section.items.forEach((item) => {
           children.push(leftRightLine(item.organization, item.location, formatRange(item.startDate, item.endDate, item.current)))
           children.push(bodyLine(item.role))
-          item.highlights.forEach((highlight) => children.push(bulletLine(highlight)))
+          nonEmptyLines(item.highlights).forEach((highlight) => children.push(bulletLine(highlight)))
         })
         break
       case 'projects':
@@ -246,7 +248,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
         section.items.forEach((item) => {
           children.push(leftRightLine(item.name, item.url, formatRange(item.startDate, item.endDate, item.current)))
           children.push(bodyLine(item.subtitle))
-          item.highlights.forEach((highlight) => children.push(bulletLine(highlight)))
+          nonEmptyLines(item.highlights).forEach((highlight) => children.push(bulletLine(highlight)))
         })
         break
       case 'certifications':
@@ -257,7 +259,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
           if (item.url) {
             children.push(bodyLine(item.url))
           }
-          item.details.forEach((detail) => children.push(bodyLine(detail)))
+          nonEmptyLines(item.details).forEach((detail) => children.push(bodyLine(detail)))
         })
         break
       case 'publications':
@@ -267,7 +269,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
           if (item.url) {
             children.push(bodyLine(item.url))
           }
-          item.details.forEach((detail) => children.push(bodyLine(detail)))
+          nonEmptyLines(item.details).forEach((detail) => children.push(bodyLine(detail)))
         })
         break
       case 'skills':
@@ -305,7 +307,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
         children.push(sectionHeading(section.title))
         section.items.forEach((item) => {
           children.push(leftRightLine(item.title, item.subtitle, '', true))
-          item.details.forEach((detail) => children.push(bodyLine(detail)))
+          nonEmptyLines(item.details).forEach((detail) => children.push(bodyLine(detail)))
         })
         break
     }

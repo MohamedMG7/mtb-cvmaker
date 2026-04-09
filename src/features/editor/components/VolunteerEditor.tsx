@@ -85,7 +85,7 @@ export const VolunteerEditor = () => {
                   updateVolunteer(
                     item.id,
                     'highlights',
-                    event.target.value.split('\n').map((line) => line.trim()).filter(Boolean),
+                    event.target.value.split('\n'),
                   )
                 }
               />

@@ -24,6 +24,8 @@ const formatRange = (startDate: string, endDate: string, current?: boolean) => {
 }
 
 const joinMeta = (...values: string[]) => values.filter(Boolean).join(' - ')
+const nonEmptyLines = (values: string[]) => values.filter((value) => value.trim().length > 0)
+const joinLines = (values: string[]) => nonEmptyLines(values).join(' ')
 
 const toExternalUrl = (value: string) => (/^https?:\/\//i.test(value) ? value : `https://${value}`)
 
@@ -206,8 +208,8 @@ const renderMinimalSection = (section: CvSection): ReactNode => {
                 </div>
                 <span>{formatRange(item.startDate, item.endDate, item.current)}</span>
                 <ul>
-                  {item.highlights.map((highlight) => (
-                    <li key={highlight}>{highlight}</li>
+                  {nonEmptyLines(item.highlights).map((highlight, index) => (
+                    <li key={`${item.id}-${index}`}>{highlight}</li>
                   ))}
                 </ul>
               </article>
@@ -229,8 +231,8 @@ const renderMinimalSection = (section: CvSection): ReactNode => {
                 <span>{formatRange(item.startDate, item.endDate, item.current)}</span>
                 {item.url ? <p className="timeline-link">{item.url}</p> : null}
                 <ul>
-                  {item.highlights.map((highlight) => (
-                    <li key={highlight}>{highlight}</li>
+                  {nonEmptyLines(item.highlights).map((highlight, index) => (
+                    <li key={`${item.id}-${index}`}>{highlight}</li>
                   ))}
                 </ul>
               </article>
@@ -251,8 +253,8 @@ const renderMinimalSection = (section: CvSection): ReactNode => {
                 </div>
                 <span>{formatRange(item.startDate, item.endDate)}</span>
                 <ul>
-                  {item.details.map((detail) => (
-                    <li key={detail}>{detail}</li>
+                  {nonEmptyLines(item.details).map((detail, index) => (
+                    <li key={`${item.id}-${index}`}>{detail}</li>
                   ))}
                 </ul>
               </article>
@@ -287,7 +289,7 @@ const renderMinimalSection = (section: CvSection): ReactNode => {
                   <p>{joinMeta(item.issuer, item.date)}</p>
                 </div>
                 {item.url ? <p className="timeline-link">{item.url}</p> : null}
-                {item.details.length > 0 ? <p className="timeline-copy">{item.details.join(' ')}</p> : null}
+                {joinLines(item.details) ? <p className="timeline-copy">{joinLines(item.details)}</p> : null}
               </article>
             ))}
           </div>
@@ -305,7 +307,7 @@ const renderMinimalSection = (section: CvSection): ReactNode => {
                   <p>{joinMeta(item.publisher, item.date)}</p>
                 </div>
                 {item.url ? <p className="timeline-link">{item.url}</p> : null}
-                {item.details.length > 0 ? <p className="timeline-copy">{item.details.join(' ')}</p> : null}
+                {joinLines(item.details) ? <p className="timeline-copy">{joinLines(item.details)}</p> : null}
               </article>
             ))}
           </div>
@@ -452,8 +454,8 @@ const renderAtlasMainSection = (section: CvSection): ReactNode => {
                 <h3>{item.role}</h3>
                 <p className="timeline-company">{joinMeta(item.organization, item.location)}</p>
                 <ul>
-                  {item.highlights.map((highlight) => (
-                    <li key={highlight}>{highlight}</li>
+                  {nonEmptyLines(item.highlights).map((highlight, index) => (
+                    <li key={`${item.id}-${index}`}>{highlight}</li>
                   ))}
                 </ul>
               </div>
@@ -473,8 +475,8 @@ const renderAtlasMainSection = (section: CvSection): ReactNode => {
                 <p className="timeline-company">{item.subtitle}</p>
                 {item.url ? <p className="timeline-link">{item.url}</p> : null}
                 <ul>
-                  {item.highlights.map((highlight) => (
-                    <li key={highlight}>{highlight}</li>
+                  {nonEmptyLines(item.highlights).map((highlight, index) => (
+                    <li key={`${item.id}-${index}`}>{highlight}</li>
                   ))}
                 </ul>
               </div>
@@ -493,8 +495,8 @@ const renderAtlasMainSection = (section: CvSection): ReactNode => {
                 <h3>{item.degree}</h3>
                 <p className="timeline-company">{joinMeta(item.school, item.location)}</p>
                 <ul>
-                  {item.details.map((detail) => (
-                    <li key={detail}>{detail}</li>
+                  {nonEmptyLines(item.details).map((detail, index) => (
+                    <li key={`${item.id}-${index}`}>{detail}</li>
                   ))}
                 </ul>
               </div>
@@ -514,7 +516,7 @@ const renderAtlasMainSection = (section: CvSection): ReactNode => {
                 <h3>{item.title}</h3>
                 <p className="timeline-company">{item.issuer}</p>
                 {item.url ? <p className="timeline-link">{item.url}</p> : null}
-                {item.details.length > 0 ? <p className="timeline-copy">{item.details.join(' ')}</p> : null}
+                {joinLines(item.details) ? <p className="timeline-copy">{joinLines(item.details)}</p> : null}
               </div>
             </article>
           ))}
@@ -531,7 +533,7 @@ const renderAtlasMainSection = (section: CvSection): ReactNode => {
                 <h3>{item.title}</h3>
                 <p className="timeline-company">{item.publisher}</p>
                 {item.url ? <p className="timeline-link">{item.url}</p> : null}
-                {item.details.length > 0 ? <p className="timeline-copy">{item.details.join(' ')}</p> : null}
+                {joinLines(item.details) ? <p className="timeline-copy">{joinLines(item.details)}</p> : null}
               </div>
             </article>
           ))}
@@ -563,7 +565,7 @@ const renderAtlasMainSection = (section: CvSection): ReactNode => {
               <div>
                 <h3>{item.title}</h3>
                 <p className="timeline-company">{item.subtitle}</p>
-                {item.details.length > 0 ? <p className="timeline-copy">{item.details.join(' ')}</p> : null}
+                {joinLines(item.details) ? <p className="timeline-copy">{joinLines(item.details)}</p> : null}
               </div>
             </article>
           ))}
@@ -594,8 +596,8 @@ const renderCambridgeSection = (section: CvSection): ReactNode => {
               </div>
               <p className="cambridge-subline">{item.role}</p>
               <ul className="cambridge-list">
-                {item.highlights.map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
+                {nonEmptyLines(item.highlights).map((highlight, index) => (
+                  <li key={`${item.id}-${index}`}>{highlight}</li>
                 ))}
               </ul>
             </article>
@@ -619,8 +621,8 @@ const renderCambridgeSection = (section: CvSection): ReactNode => {
               </div>
               <p className="cambridge-subline">{item.subtitle}</p>
               <ul className="cambridge-list">
-                {item.highlights.map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
+                {nonEmptyLines(item.highlights).map((highlight, index) => (
+                  <li key={`${item.id}-${index}`}>{highlight}</li>
                 ))}
               </ul>
             </article>
@@ -643,7 +645,7 @@ const renderCambridgeSection = (section: CvSection): ReactNode => {
                 <span>{formatRange(item.startDate, item.endDate)}</span>
               </div>
               <p className="cambridge-subline">{item.degree}</p>
-              {item.details.length > 0 ? <p className="cambridge-body">{item.details.join(' ')}</p> : null}
+              {joinLines(item.details) ? <p className="cambridge-body">{joinLines(item.details)}</p> : null}
             </article>
           ))}
         </section>
@@ -665,7 +667,7 @@ const renderCambridgeSection = (section: CvSection): ReactNode => {
                 <span>{item.date}</span>
               </div>
               {item.url ? <p className="cambridge-subline">{item.url}</p> : null}
-              {item.details.length > 0 ? <p className="cambridge-body">{item.details.join(' ')}</p> : null}
+              {joinLines(item.details) ? <p className="cambridge-body">{joinLines(item.details)}</p> : null}
             </article>
           ))}
         </section>
@@ -686,7 +688,7 @@ const renderCambridgeSection = (section: CvSection): ReactNode => {
                 <span>{item.date}</span>
               </div>
               {item.url ? <p className="cambridge-subline">{item.url}</p> : null}
-              {item.details.length > 0 ? <p className="cambridge-body">{item.details.join(' ')}</p> : null}
+              {joinLines(item.details) ? <p className="cambridge-body">{joinLines(item.details)}</p> : null}
             </article>
           ))}
         </section>
@@ -773,7 +775,7 @@ const renderCambridgeSection = (section: CvSection): ReactNode => {
                   <span>{item.subtitle}</span>
                 </div>
               </div>
-              {item.details.length > 0 ? <p className="cambridge-body">{item.details.join(' ')}</p> : null}
+              {joinLines(item.details) ? <p className="cambridge-body">{joinLines(item.details)}</p> : null}
             </article>
           ))}
         </section>
