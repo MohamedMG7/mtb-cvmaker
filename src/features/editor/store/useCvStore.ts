@@ -177,6 +177,7 @@ const createLink = (): LinkItem => ({
   id: makeId(),
   label: 'New Link',
   url: 'https://example.com',
+  headerDisplay: 'label',
 })
 
 const createReference = (): ReferenceItem => ({

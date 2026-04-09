@@ -50,6 +50,24 @@ export const LinksEditor = () => {
                 />
               </label>
             </div>
+            <div className="field">
+              <span>Header display</span>
+              <div className="segmented-control">
+                {([
+                  ['label', 'Show label'],
+                  ['url', 'Show link'],
+                ] as const).map(([mode, text]) => (
+                  <button
+                    key={mode}
+                    className={item.headerDisplay === mode ? 'is-active' : ''}
+                    onClick={() => updateLink(item.id, 'headerDisplay', mode)}
+                    type="button"
+                  >
+                    {text}
+                  </button>
+                ))}
+              </div>
+            </div>
           </article>
         ))}
       </div>

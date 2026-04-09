@@ -194,7 +194,7 @@ export const App = () => {
       if (!grip) return
 
       event.preventDefault()
-      const shell = (event.currentTarget as HTMLElement)
+      const shell = event.currentTarget
       shell.setPointerCapture(event.pointerId)
 
       dragStartY.current = event.clientY

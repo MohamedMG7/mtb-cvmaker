@@ -1,11 +1,17 @@
+import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
 import { SectionCard } from './SectionCard'
 
 export const ProfileEditor = () => {
+  const document = useCvStore((state) => state.document)
   const profile = useCvStore((state) => state.document.profile)
+  const links = getSection(document, 'links')
   const title = useCvStore((state) => state.document.metadata.title)
   const updateTitle = useCvStore((state) => state.updateTitle)
   const updateProfileField = useCvStore((state) => state.updateProfileField)
+  const updateLink = useCvStore((state) => state.updateLink)
+  const addLink = useCvStore((state) => state.addLink)
+  const removeLink = useCvStore((state) => state.removeLink)
 
   return (
     <SectionCard
@@ -68,6 +74,60 @@ export const ProfileEditor = () => {
           onChange={(event) => updateProfileField('summary', event.target.value)}
         />
       </label>
+      <div className="stack-list">
+        <div className="item-card__header">
+          <strong>Header links</strong>
+          <button className="primary-button" onClick={addLink} type="button">
+            Add link
+          </button>
+        </div>
+        {links.items.map((item) => (
+          <article key={item.id} className="item-card">
+            <div className="item-card__header">
+              <strong>{item.label || 'Untitled link'}</strong>
+              <button className="ghost-button" onClick={() => removeLink(item.id)} type="button">
+                Remove
+              </button>
+            </div>
+            <div className="field-grid field-grid--two">
+              <label className="field">
+                <span>Label</span>
+                <input
+                  placeholder="GitHub, LinkedIn, Portfolio"
+                  value={item.label}
+                  onChange={(event) => updateLink(item.id, 'label', event.target.value)}
+                />
+              </label>
+              <label className="field">
+                <span>URL</span>
+                <input
+                  placeholder="https://..."
+                  value={item.url}
+                  onChange={(event) => updateLink(item.id, 'url', event.target.value)}
+                />
+              </label>
+            </div>
+            <div className="field">
+              <span>Header display</span>
+              <div className="segmented-control">
+                {([
+                  ['label', 'Show label'],
+                  ['url', 'Show link'],
+                ] as const).map(([mode, text]) => (
+                  <button
+                    key={mode}
+                    className={item.headerDisplay === mode ? 'is-active' : ''}
+                    onClick={() => updateLink(item.id, 'headerDisplay', mode)}
+                    type="button"
+                  >
+                    {text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
     </SectionCard>
   )
 }

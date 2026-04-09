@@ -6,6 +6,9 @@ export type TemplateId = (typeof templateIds)[number]
 export const densityOptions = ['comfortable', 'compact'] as const
 export type Density = (typeof densityOptions)[number]
 
+export const headerLinkDisplayModes = ['label', 'url'] as const
+export type HeaderLinkDisplayMode = (typeof headerLinkDisplayModes)[number]
+
 export const CURRENT_DOCUMENT_VERSION = '1.3.0'
 
 const TimedHighlightsItemSchema = z.object({
@@ -50,6 +53,7 @@ const LinkItemSchema = z.object({
   id: z.string(),
   label: z.string(),
   url: z.string(),
+  headerDisplay: z.enum(headerLinkDisplayModes),
 })
 
 const DatedItemSchema = z.object({
@@ -351,6 +355,7 @@ const makeLinkItem = (): LinkItem => ({
   id: makeId(),
   label: 'Portfolio',
   url: 'https://portfolio.dev',
+  headerDisplay: 'label',
 })
 
 const makeDatedItem = (title: string, issuer: string): CertificationItem => ({
@@ -533,6 +538,7 @@ const normalizeLinkItem = (value: UnknownRecord): LinkItem => ({
   id: asString(value.id, makeId()),
   label: asString(value.label),
   url: asString(value.url),
+  headerDisplay: asEnum(value.headerDisplay, headerLinkDisplayModes, 'label'),
 })
 
 const normalizeDatedItem = (value: UnknownRecord): CertificationItem => ({
@@ -978,11 +984,13 @@ export const createSampleDocument = (): CvDocument =>
             id: makeId(),
             label: 'Portfolio',
             url: 'https://aminapatel.design',
+            headerDisplay: 'label',
           },
           {
             id: makeId(),
             label: 'LinkedIn',
             url: 'https://linkedin.com/in/aminapatel',
+            headerDisplay: 'label',
           },
         ],
       },

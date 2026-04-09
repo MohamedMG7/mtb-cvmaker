@@ -31,6 +31,89 @@ const formatRange = (startDate: string, endDate: string, current?: boolean) => {
   return [startDate, endLabel].filter(Boolean).join(' - ')
 }
 
+type HeaderLink = {
+  label: string
+  url: string
+  headerDisplay: 'label' | 'url'
+}
+
+type HeaderContactItem = {
+  text: string
+  href?: string
+}
+
+const toExternalUrl = (value: string) => (/^https?:\/\//i.test(value) ? value : `https://${value}`)
+
+const getHeaderLinks = (document: CvDocument): HeaderLink[] => {
+  const section = document.sections.find((item) => item.type === 'links')
+
+  if (!section || section.type !== 'links') {
+    return []
+  }
+
+  return section.items
+    .map((item, index) => ({
+      label: item.label.trim() || `Link ${index + 1}`,
+      url: item.url.trim(),
+      headerDisplay: item.headerDisplay,
+    }))
+    .filter((item) => item.url)
+}
+
+const getHeaderLinkText = (link: HeaderLink, index: number) =>
+  link.headerDisplay === 'url' ? link.url : link.label.trim() || `Link ${index + 1}`
+
+const getHeaderContactItems = (document: CvDocument): HeaderContactItem[] => {
+  const items: HeaderContactItem[] = []
+  const seen = new Set<string>()
+
+  const pushText = (value: string) => {
+    const trimmed = value.trim()
+
+    if (!trimmed) {
+      return
+    }
+
+    const cacheKey = `text:${trimmed.toLowerCase()}`
+
+    if (seen.has(cacheKey)) {
+      return
+    }
+
+    seen.add(cacheKey)
+    items.push({ text: trimmed })
+  }
+
+  const pushLink = (text: string, url: string) => {
+    const trimmedUrl = url.trim()
+
+    if (!trimmedUrl) {
+      return
+    }
+
+    const href = toExternalUrl(trimmedUrl)
+    const cacheKey = `link:${href.toLowerCase()}`
+
+    if (seen.has(cacheKey)) {
+      return
+    }
+
+    seen.add(cacheKey)
+    items.push({ text: text.trim(), href })
+  }
+
+  pushText(document.profile.location)
+  pushText(document.profile.email)
+  pushText(document.profile.phone)
+  pushLink('Website', document.profile.website)
+
+  getHeaderLinks(document).forEach((item, index) => {
+    pushLink(getHeaderLinkText(item, index), item.url)
+  })
+
+  return items
+}
+
 export const exportCambridgeDocx = async (document: CvDocument) => {
   const font = document.theme.fontFamily
   const color = document.theme.textColor.replace('#', '').toUpperCase()
@@ -90,11 +173,35 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
       children: [
         makeRun(`${label}: `, { bold: true }),
         new ExternalHyperlink({
-          link: /^https?:\/\//.test(url) ? url : `https://${url}`,
+          link: toExternalUrl(url),
           children: [makeRun(url, { underline: { type: UnderlineType.SINGLE } })],
         }),
       ],
     })
+
+  const makeHeaderLineChildren = () => {
+    const items = getHeaderContactItems(document)
+
+    if (items.length === 0) {
+      return [makeRun('')]
+    }
+
+    return items.flatMap((item, index) => {
+      const prefix = index > 0 ? [makeRun(' - ')] : []
+
+      if (!item.href) {
+        return [...prefix, makeRun(item.text)]
+      }
+
+      return [
+        ...prefix,
+        new ExternalHyperlink({
+          link: item.href,
+          children: [makeRun(item.text, { underline: { type: UnderlineType.SINGLE } })],
+        }),
+      ]
+    })
+  }
 
   const children: Paragraph[] = [
     new Paragraph({
@@ -105,13 +212,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
     new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { after: 120 },
-      children: [
-        makeRun(
-          [document.profile.location, document.profile.email, document.profile.phone, document.profile.website]
-            .filter(Boolean)
-            .join(' - '),
-        ),
-      ],
+      children: makeHeaderLineChildren(),
     }),
     sectionHeading('Summary'),
     bodyLine(document.profile.summary),

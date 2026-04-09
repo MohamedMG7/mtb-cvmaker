@@ -1,9 +1,21 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import type { CvDocument, CvSection } from '../../../lib/schema/cv'
 
 type CvPreviewProps = {
   document: CvDocument
+}
+
+type HeaderLink = {
+  label: string
+  url: string
+  headerDisplay: 'label' | 'url'
+}
+
+type HeaderContactItem = {
+  key: string
+  text: string
+  href?: string
 }
 
 const formatRange = (startDate: string, endDate: string, current?: boolean) => {
@@ -12,6 +24,103 @@ const formatRange = (startDate: string, endDate: string, current?: boolean) => {
 }
 
 const joinMeta = (...values: string[]) => values.filter(Boolean).join(' - ')
+
+const toExternalUrl = (value: string) => (/^https?:\/\//i.test(value) ? value : `https://${value}`)
+
+const getHeaderLinks = (document: CvDocument): HeaderLink[] => {
+  const section = document.sections.find((item) => item.type === 'links')
+
+  if (!section || section.type !== 'links') {
+    return []
+  }
+
+  return section.items
+    .map((item, index) => ({
+      label: item.label.trim() || `Link ${index + 1}`,
+      url: item.url.trim(),
+      headerDisplay: item.headerDisplay,
+    }))
+    .filter((item) => item.url)
+}
+
+const getHeaderLinkText = (link: HeaderLink, index: number) =>
+  link.headerDisplay === 'url' ? link.url : link.label.trim() || `Link ${index + 1}`
+
+const renderHeaderContactItems = (items: HeaderContactItem[]) =>
+  items.map((item, index) => (
+    <Fragment key={item.key}>
+      {index > 0 ? ' - ' : null}
+      {item.href ? (
+        <a className="header-contact-link" href={item.href} rel="noreferrer" target="_blank">
+          {item.text}
+        </a>
+      ) : (
+        item.text
+      )}
+    </Fragment>
+  ))
+
+const getHeaderContactItems = (document: CvDocument): HeaderContactItem[] => {
+  const items: HeaderContactItem[] = []
+  const seen = new Set<string>()
+
+  const pushText = (value: string, key: string) => {
+    const trimmed = value.trim()
+
+    if (!trimmed) {
+      return
+    }
+
+    const cacheKey = `text:${trimmed.toLowerCase()}`
+
+    if (seen.has(cacheKey)) {
+      return
+    }
+
+    seen.add(cacheKey)
+    items.push({ key, text: trimmed })
+  }
+
+  const pushLink = (text: string, url: string, key: string) => {
+    const trimmedUrl = url.trim()
+
+    if (!trimmedUrl) {
+      return
+    }
+
+    const href = toExternalUrl(trimmedUrl)
+    const cacheKey = `link:${href.toLowerCase()}`
+
+    if (seen.has(cacheKey)) {
+      return
+    }
+
+    seen.add(cacheKey)
+    items.push({ key, text: text.trim(), href })
+  }
+
+  pushText(document.profile.location, 'location')
+  pushText(document.profile.email, 'email')
+  pushText(document.profile.phone, 'phone')
+  pushLink('Website', document.profile.website, 'website')
+
+  getHeaderLinks(document).forEach((item, index) => {
+    pushLink(getHeaderLinkText(item, index), item.url, `header-link-${index}`)
+  })
+
+  return items
+}
+
+const renderHeaderContactLine = (document: CvDocument) => renderHeaderContactItems(getHeaderContactItems(document))
+
+const renderHeaderLinksOnly = (document: CvDocument) =>
+  renderHeaderContactItems(
+    getHeaderLinks(document).map((item, index) => ({
+      key: `header-link-only-${index}`,
+      text: getHeaderLinkText(item, index),
+      href: toExternalUrl(item.url),
+    })),
+  )
 
 const hexToRgb = (value: string) => {
   const normalized = value.trim()
@@ -698,8 +807,25 @@ const MinimalTemplate = ({ document }: CvPreviewProps) => {
           </div>
           <div>
             <dt>Website</dt>
-            <dd>{document.profile.website}</dd>
+            <dd>
+              {document.profile.website ? (
+                <a
+                  className="header-contact-link"
+                  href={toExternalUrl(document.profile.website)}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Website
+                </a>
+              ) : null}
+            </dd>
           </div>
+          {getHeaderLinks(document).length > 0 ? (
+            <div>
+              <dt>Header links</dt>
+              <dd>{renderHeaderLinksOnly(document)}</dd>
+            </div>
+          ) : null}
         </dl>
       </header>
 
@@ -727,10 +853,7 @@ const AtlasTemplate = ({ document }: CvPreviewProps) => {
         <p className="headline">{document.profile.headline}</p>
         <p className="atlas-summary">{document.profile.summary}</p>
         <div className="atlas-contact">
-          <p>{document.profile.email}</p>
-          <p>{document.profile.phone}</p>
-          <p>{document.profile.location}</p>
-          <p>{document.profile.website}</p>
+          <p>{renderHeaderContactLine(document)}</p>
         </div>
         {sidebarSections.map((section) => renderAtlasSidebarSection(section))}
       </aside>
@@ -747,9 +870,7 @@ export const CambridgeTemplate = ({ document }: CvPreviewProps) => {
     <article className="cv-sheet cv-sheet--cambridge" style={getSheetStyle(document)}>
       <header className="cambridge-header">
         <h1>{document.profile.fullName}</h1>
-        <p className="cambridge-contact-line">
-          {joinMeta(document.profile.location, document.profile.email, document.profile.phone, document.profile.website)}
-        </p>
+        <p className="cambridge-contact-line">{renderHeaderContactLine(document)}</p>
       </header>
 
       <section className="cambridge-section">
