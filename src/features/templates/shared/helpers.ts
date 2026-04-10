@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import type { CvDocument, CvSection, HeaderLinkDisplayMode } from '../../../lib/schema/cv'
+import type { CvDocument, CvSection, Density, HeaderLinkDisplayMode } from '../../../lib/schema/cv'
 
 export type HeaderLink = {
   label: string
@@ -37,7 +37,7 @@ const hexToRgb = (value: string) => {
   return { r: 31, g: 27, b: 25 }
 }
 
-const rgba = (value: string, alpha: number) => {
+export const withAlpha = (value: string, alpha: number) => {
   const { r, g, b } = hexToRgb(value)
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
@@ -62,6 +62,8 @@ const densityTokens = {
     chipPadding: '0.32rem 0.55rem',
   },
 } as const
+
+export const getDensityStyleTokens = (density: Density) => densityTokens[density]
 
 export const formatRange = (startDate: string, endDate: string, current?: boolean) => {
   const endLabel = current ? 'Present' : endDate
@@ -153,17 +155,17 @@ export const filterSectionsByType = (sections: CvSection[], allowedTypes: Set<Cv
 
 export const getDocumentStyle = (document: CvDocument): CSSProperties => ({
   ['--text-color' as string]: document.theme.textColor,
-  ['--muted-color' as string]: rgba(document.theme.textColor, 0.72),
-  ['--soft-color' as string]: rgba(document.theme.textColor, 0.54),
-  ['--rule-color' as string]: rgba(document.theme.textColor, 0.3),
-  ['--chip-bg' as string]: rgba(document.theme.textColor, 0.06),
-  ['--page-padding' as string]: densityTokens[document.theme.density].pagePadding,
-  ['--block-gap' as string]: densityTokens[document.theme.density].blockGap,
-  ['--list-gap' as string]: densityTokens[document.theme.density].listGap,
-  ['--item-gap' as string]: densityTokens[document.theme.density].itemGap,
-  ['--body-size' as string]: densityTokens[document.theme.density].bodySize,
-  ['--body-line-height' as string]: densityTokens[document.theme.density].bodyLineHeight,
-  ['--chip-padding' as string]: densityTokens[document.theme.density].chipPadding,
+  ['--muted-color' as string]: withAlpha(document.theme.textColor, 0.72),
+  ['--soft-color' as string]: withAlpha(document.theme.textColor, 0.54),
+  ['--rule-color' as string]: withAlpha(document.theme.textColor, 0.3),
+  ['--chip-bg' as string]: withAlpha(document.theme.textColor, 0.06),
+  ['--page-padding' as string]: getDensityStyleTokens(document.theme.density).pagePadding,
+  ['--block-gap' as string]: getDensityStyleTokens(document.theme.density).blockGap,
+  ['--list-gap' as string]: getDensityStyleTokens(document.theme.density).listGap,
+  ['--item-gap' as string]: getDensityStyleTokens(document.theme.density).itemGap,
+  ['--body-size' as string]: getDensityStyleTokens(document.theme.density).bodySize,
+  ['--body-line-height' as string]: getDensityStyleTokens(document.theme.density).bodyLineHeight,
+  ['--chip-padding' as string]: getDensityStyleTokens(document.theme.density).chipPadding,
   ['--page-font-family' as string]: document.theme.fontFamily,
   fontFamily: document.theme.fontFamily,
 })

@@ -1,7 +1,7 @@
 import { pdf } from '@react-pdf/renderer'
 import type { CvDocument } from '../../../lib/schema/cv'
 import { initializePdfFonts } from '../shared/pdf-fonts'
-import { CambridgePdfDocument } from './pdf'
+import { MinimalPdfDocument } from './pdf'
 
 const getFileStem = (document: CvDocument) =>
   `${document.metadata.title || 'cv'}`.trim().replace(/\s+/g, '-').toLowerCase()
@@ -15,8 +15,8 @@ const saveBlob = (blob: Blob, fileName: string) => {
   URL.revokeObjectURL(url)
 }
 
-export const exportCambridgePdf = async (document: CvDocument) => {
+export const exportMinimalPdf = async (document: CvDocument) => {
   initializePdfFonts()
-  const blob = await pdf(<CambridgePdfDocument document={document} />).toBlob()
+  const blob = await pdf(<MinimalPdfDocument document={document} />).toBlob()
   saveBlob(blob, `${getFileStem(document)}.pdf`)
 }
