@@ -5,8 +5,9 @@ import { exportRasterPdf } from './pdf-raster'
 export const exportPdf = async (document: CvDocument) => {
   const template = getTemplateDefinition(document.theme.templateId)
 
-  if (template.supportsPrintPdf && template.exportPrintPdf) {
-    await template.exportPrintPdf(document)
+  if (template.supportsPdfExport && template.loadPdfExporter) {
+    const exportPdfForTemplate = await template.loadPdfExporter()
+    await exportPdfForTemplate(document)
     return
   }
 

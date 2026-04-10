@@ -18,6 +18,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@fontsource/alegreya-sans": "^5.2.8",
+    "@fontsource/literata": "^5.2.8",
+    "@fontsource/spectral": "^5.2.8",
+    "@react-pdf/renderer": "^4.4.0",
     "clsx": "^2.1.1",
     "dexie": "^4.4.2",
     "docx": "^9.6.1",
