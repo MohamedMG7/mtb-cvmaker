@@ -32,7 +32,8 @@ const templateDefinitionMap: Record<TemplateId, TemplateDefinition> = {
     id: 'atlas',
     label: 'Atlas',
     PreviewComponent: AtlasTemplate,
-    supportsPdfExport: false,
+    loadPdfExporter: async () => (await import('./atlas/export')).exportAtlasPdf,
+    supportsPdfExport: true,
   },
 }
 
