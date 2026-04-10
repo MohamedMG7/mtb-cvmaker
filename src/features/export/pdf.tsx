@@ -2,7 +2,8 @@ import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { CvDocument } from '../../lib/schema/cv'
-import { CvPreview, computePageBreaks, A4_HEIGHT_PX, PAGE_TOP_PADDING_PX } from '../preview/components/CvPreview'
+import { CvPreview } from '../preview/components/CvPreview'
+import { A4_HEIGHT_PX, PAGE_TOP_PADDING_PX, computePageBreaks } from '../preview/components/pagination'
 
 const getFileStem = (cvDoc: CvDocument) =>
   `${cvDoc.metadata.title || 'cv'}`.trim().replace(/\s+/g, '-').toLowerCase()
