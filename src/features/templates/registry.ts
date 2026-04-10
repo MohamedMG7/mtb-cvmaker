@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react'
-import { templateIds, type TemplateId } from '../../lib/schema/cv'
+import { templateIds, type CvDocument, type TemplateId } from '../../lib/schema/cv'
 import { CambridgePrintDocument } from './cambridge/print'
 import { AtlasTemplate, CambridgeTemplate, MinimalTemplate, type CvPreviewProps } from './previews'
 
@@ -8,7 +8,8 @@ export type TemplateDefinition = {
   label: string
   PreviewComponent: ComponentType<CvPreviewProps>
   PrintComponent?: ComponentType<CvPreviewProps>
-  supportsPrintPdf: boolean
+  loadPdfExporter?: () => Promise<(document: CvDocument) => Promise<void>>
+  supportsPdfExport: boolean
 }
 
 const templateDefinitionMap: Record<TemplateId, TemplateDefinition> = {
@@ -17,19 +18,20 @@ const templateDefinitionMap: Record<TemplateId, TemplateDefinition> = {
     label: 'Cambridge',
     PreviewComponent: CambridgeTemplate,
     PrintComponent: CambridgePrintDocument,
-    supportsPrintPdf: true,
+    loadPdfExporter: async () => (await import('./cambridge/export')).exportCambridgePdf,
+    supportsPdfExport: true,
   },
   minimal: {
     id: 'minimal',
     label: 'Minimal',
     PreviewComponent: MinimalTemplate,
-    supportsPrintPdf: false,
+    supportsPdfExport: false,
   },
   atlas: {
     id: 'atlas',
     label: 'Atlas',
     PreviewComponent: AtlasTemplate,
-    supportsPrintPdf: false,
+    supportsPdfExport: false,
   },
 }
 
