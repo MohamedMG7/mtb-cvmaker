@@ -1,8 +1,9 @@
 import { Fragment } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { CvDocument, CvSection } from '../../lib/schema/cv'
 import {
   formatRange,
+  getDocumentStyle,
   getHeaderContactItems,
   getHeaderLinkText,
   getHeaderLinks,
@@ -43,72 +44,6 @@ const renderHeaderLinksOnly = (document: CvDocument) =>
       href: toExternalUrl(item.url),
     })),
   )
-
-const hexToRgb = (value: string) => {
-  const normalized = value.trim()
-  const hex = normalized.startsWith('#') ? normalized.slice(1) : normalized
-
-  if (hex.length === 3) {
-    const [r, g, b] = hex.split('')
-    return {
-      r: Number.parseInt(`${r}${r}`, 16),
-      g: Number.parseInt(`${g}${g}`, 16),
-      b: Number.parseInt(`${b}${b}`, 16),
-    }
-  }
-
-  if (hex.length === 6) {
-    return {
-      r: Number.parseInt(hex.slice(0, 2), 16),
-      g: Number.parseInt(hex.slice(2, 4), 16),
-      b: Number.parseInt(hex.slice(4, 6), 16),
-    }
-  }
-
-  return { r: 31, g: 27, b: 25 }
-}
-
-const rgba = (value: string, alpha: number) => {
-  const { r, g, b } = hexToRgb(value)
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`
-}
-
-const densityTokens = {
-  comfortable: {
-    pagePadding: '2rem',
-    blockGap: '1.2rem',
-    listGap: '1rem',
-    itemGap: '0.35rem',
-    bodySize: '1rem',
-    bodyLineHeight: '1.58',
-    chipPadding: '0.45rem 0.7rem',
-  },
-  compact: {
-    pagePadding: '1.4rem',
-    blockGap: '0.85rem',
-    listGap: '0.65rem',
-    itemGap: '0.22rem',
-    bodySize: '0.93rem',
-    bodyLineHeight: '1.42',
-    chipPadding: '0.32rem 0.55rem',
-  },
-} as const
-
-const getSheetStyle = (document: CvDocument): CSSProperties => ({
-  ['--text-color' as string]: document.theme.textColor,
-  ['--muted-color' as string]: rgba(document.theme.textColor, 0.72),
-  ['--soft-color' as string]: rgba(document.theme.textColor, 0.54),
-  ['--rule-color' as string]: rgba(document.theme.textColor, 0.3),
-  ['--chip-bg' as string]: rgba(document.theme.textColor, 0.06),
-  ['--page-padding' as string]: densityTokens[document.theme.density].pagePadding,
-  ['--block-gap' as string]: densityTokens[document.theme.density].blockGap,
-  ['--list-gap' as string]: densityTokens[document.theme.density].listGap,
-  ['--item-gap' as string]: densityTokens[document.theme.density].itemGap,
-  ['--body-size' as string]: densityTokens[document.theme.density].bodySize,
-  ['--body-line-height' as string]: densityTokens[document.theme.density].bodyLineHeight,
-  ['--chip-padding' as string]: densityTokens[document.theme.density].chipPadding,
-  fontFamily: document.theme.fontFamily,
-})
 
 const renderMinimalSection = (section: CvSection): ReactNode => {
   switch (section.type) {
@@ -705,7 +640,7 @@ export const MinimalTemplate = ({ document }: CvPreviewProps) => {
   const sections = getVisibleSections(document)
 
   return (
-    <article className="cv-sheet cv-sheet--minimal" style={getSheetStyle(document)}>
+    <article className="cv-sheet cv-sheet--minimal" style={getDocumentStyle(document)}>
       <header className="cv-sheet__header">
         <div>
           <p className="eyebrow">MTB-cvMaker</p>
@@ -766,7 +701,7 @@ export const AtlasTemplate = ({ document }: CvPreviewProps) => {
   const mainSections = sections.filter((section) => !sidebarTypes.has(section.type))
 
   return (
-    <article className="cv-sheet cv-sheet--atlas" style={getSheetStyle(document)}>
+    <article className="cv-sheet cv-sheet--atlas" style={getDocumentStyle(document)}>
       <aside className="atlas-rail">
         <p className="eyebrow">Profile</p>
         <h1>{document.profile.fullName}</h1>
@@ -787,7 +722,7 @@ export const CambridgeTemplate = ({ document }: CvPreviewProps) => {
   const sections = getVisibleSections(document)
 
   return (
-    <article className="cv-sheet cv-sheet--cambridge" style={getSheetStyle(document)}>
+    <article className="cv-sheet cv-sheet--cambridge" style={getDocumentStyle(document)}>
       <header className="cambridge-header">
         <h1>{document.profile.fullName}</h1>
         <p className="cambridge-contact-line">{renderHeaderContactLine(document)}</p>

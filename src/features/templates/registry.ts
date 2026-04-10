@@ -1,11 +1,13 @@
 import type { ComponentType } from 'react'
 import { templateIds, type TemplateId } from '../../lib/schema/cv'
+import { CambridgePrintDocument } from './cambridge/print'
 import { AtlasTemplate, CambridgeTemplate, MinimalTemplate, type CvPreviewProps } from './previews'
 
 export type TemplateDefinition = {
   id: TemplateId
   label: string
   PreviewComponent: ComponentType<CvPreviewProps>
+  PrintComponent?: ComponentType<CvPreviewProps>
   supportsPrintPdf: boolean
 }
 
@@ -14,7 +16,8 @@ const templateDefinitionMap: Record<TemplateId, TemplateDefinition> = {
     id: 'cambridge',
     label: 'Cambridge',
     PreviewComponent: CambridgeTemplate,
-    supportsPrintPdf: false,
+    PrintComponent: CambridgePrintDocument,
+    supportsPrintPdf: true,
   },
   minimal: {
     id: 'minimal',
