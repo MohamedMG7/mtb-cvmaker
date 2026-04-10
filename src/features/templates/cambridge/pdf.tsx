@@ -16,14 +16,14 @@ import {
   nonEmptyLines,
   toExternalUrl,
 } from '../shared/helpers'
+import { getPdfFontFamily } from '../shared/pdf-fonts'
 import { getCambridgePdfMetrics } from '../configuration/cambridge'
-import { getCambridgePdfFontFamily } from './pdf-fonts'
 
 const getFileStem = (document: CvDocument) =>
   `${document.metadata.title || 'cv'}`.trim().replace(/\s+/g, '-').toLowerCase()
 
 const createStyles = (document: CvDocument) => {
-  const fontFamily = getCambridgePdfFontFamily(document.theme.fontFamily)
+  const fontFamily = getPdfFontFamily(document.theme.fontFamily)
   const tokens = getCambridgePdfMetrics(document.theme.density)
 
   return StyleSheet.create({

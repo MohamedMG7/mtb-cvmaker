@@ -25,7 +25,8 @@ const templateDefinitionMap: Record<TemplateId, TemplateDefinition> = {
     id: 'minimal',
     label: 'Minimal',
     PreviewComponent: MinimalTemplate,
-    supportsPdfExport: false,
+    loadPdfExporter: async () => (await import('./minimal/export')).exportMinimalPdf,
+    supportsPdfExport: true,
   },
   atlas: {
     id: 'atlas',

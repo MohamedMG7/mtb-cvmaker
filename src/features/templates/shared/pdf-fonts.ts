@@ -11,7 +11,7 @@ import spectral700 from '@fontsource/spectral/files/spectral-latin-700-normal.wo
 
 let fontsRegistered = false
 
-export const initializeCambridgePdfFonts = () => {
+export const initializePdfFonts = () => {
   if (fontsRegistered) {
     return
   }
@@ -46,7 +46,7 @@ export const initializeCambridgePdfFonts = () => {
   fontsRegistered = true
 }
 
-export const getCambridgePdfFontFamily = (fontFamily: string) => {
+export const getPdfFontFamily = (fontFamily: string) => {
   if (fontFamily === 'Alegreya Sans' || fontFamily === 'Literata' || fontFamily === 'Spectral') {
     return fontFamily
   }
