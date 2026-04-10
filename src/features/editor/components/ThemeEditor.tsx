@@ -1,13 +1,9 @@
-import { densityOptions, templateIds } from '../../../lib/schema/cv'
+import { densityOptions } from '../../../lib/schema/cv'
+import { templateRegistry } from '../../templates/registry'
 import { useCvStore } from '../store/useCvStore'
 import { SectionCard } from './SectionCard'
 
 const fontOptions = ['Literata', 'Spectral', 'Alegreya Sans']
-const templateLabels: Record<string, string> = {
-  minimal: 'Minimal',
-  atlas: 'Atlas',
-  cambridge: 'Cambridge',
-}
 
 const extendedFontOptions = [...fontOptions, 'Calibri']
 
@@ -43,9 +39,9 @@ export const ThemeEditor = () => {
             value={theme.templateId}
             onChange={(event) => updateThemeField('templateId', event.target.value)}
           >
-            {templateIds.map((templateId) => (
-              <option key={templateId} value={templateId}>
-                {templateLabels[templateId] ?? templateId}
+            {templateRegistry.map((template) => (
+              <option key={template.id} value={template.id}>
+                {template.label}
               </option>
             ))}
           </select>

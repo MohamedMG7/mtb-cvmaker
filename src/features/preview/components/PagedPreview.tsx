@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CvDocument } from '../../../lib/schema/cv'
-import { A4_HEIGHT_PX, CvPreview, PAGE_TOP_PADDING_PX, computePageBreaks } from './CvPreview'
+import { CvPreview } from './CvPreview'
+import { A4_HEIGHT_PX, PAGE_TOP_PADDING_PX, computePageBreaks } from './pagination'
 
 type PagedPreviewProps = {
   document: CvDocument

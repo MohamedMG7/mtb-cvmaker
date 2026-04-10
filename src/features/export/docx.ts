@@ -13,6 +13,7 @@ import {
   UnderlineType,
 } from 'docx'
 import type { CvDocument, CvSection } from '../../lib/schema/cv'
+import { formatRange, getHeaderContactItems, nonEmptyLines, toExternalUrl } from '../templates/shared/helpers'
 
 const getFileStem = (document: CvDocument) =>
   `${document.metadata.title || 'cv'}`.trim().replace(/\s+/g, '-').toLowerCase()
@@ -24,96 +25,6 @@ const saveBlob = (blob: Blob, fileName: string) => {
   link.download = fileName
   link.click()
   URL.revokeObjectURL(url)
-}
-
-const formatRange = (startDate: string, endDate: string, current?: boolean) => {
-  const endLabel = current ? 'Present' : endDate
-  return [startDate, endLabel].filter(Boolean).join(' - ')
-}
-
-const nonEmptyLines = (values: string[]) => values.filter((value) => value.trim().length > 0)
-
-type HeaderLink = {
-  label: string
-  url: string
-  headerDisplay: 'label' | 'url'
-}
-
-type HeaderContactItem = {
-  text: string
-  href?: string
-}
-
-const toExternalUrl = (value: string) => (/^https?:\/\//i.test(value) ? value : `https://${value}`)
-
-const getHeaderLinks = (document: CvDocument): HeaderLink[] => {
-  const section = document.sections.find((item) => item.type === 'links')
-
-  if (!section || section.type !== 'links') {
-    return []
-  }
-
-  return section.items
-    .map((item, index) => ({
-      label: item.label.trim() || `Link ${index + 1}`,
-      url: item.url.trim(),
-      headerDisplay: item.headerDisplay,
-    }))
-    .filter((item) => item.url)
-}
-
-const getHeaderLinkText = (link: HeaderLink, index: number) =>
-  link.headerDisplay === 'url' ? link.url : link.label.trim() || `Link ${index + 1}`
-
-const getHeaderContactItems = (document: CvDocument): HeaderContactItem[] => {
-  const items: HeaderContactItem[] = []
-  const seen = new Set<string>()
-
-  const pushText = (value: string) => {
-    const trimmed = value.trim()
-
-    if (!trimmed) {
-      return
-    }
-
-    const cacheKey = `text:${trimmed.toLowerCase()}`
-
-    if (seen.has(cacheKey)) {
-      return
-    }
-
-    seen.add(cacheKey)
-    items.push({ text: trimmed })
-  }
-
-  const pushLink = (text: string, url: string) => {
-    const trimmedUrl = url.trim()
-
-    if (!trimmedUrl) {
-      return
-    }
-
-    const href = toExternalUrl(trimmedUrl)
-    const cacheKey = `link:${href.toLowerCase()}`
-
-    if (seen.has(cacheKey)) {
-      return
-    }
-
-    seen.add(cacheKey)
-    items.push({ text: text.trim(), href })
-  }
-
-  pushText(document.profile.location)
-  pushText(document.profile.email)
-  pushText(document.profile.phone)
-  pushLink('Website', document.profile.website)
-
-  getHeaderLinks(document).forEach((item, index) => {
-    pushLink(getHeaderLinkText(item, index), item.url)
-  })
-
-  return items
 }
 
 export const exportCambridgeDocx = async (document: CvDocument) => {
