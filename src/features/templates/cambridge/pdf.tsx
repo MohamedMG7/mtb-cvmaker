@@ -7,7 +7,7 @@ import {
   View,
 } from '@react-pdf/renderer'
 import type { ReactNode } from 'react'
-import type { CvDocument, CvSection, Density } from '../../../lib/schema/cv'
+import type { CvDocument, CvSection } from '../../../lib/schema/cv'
 import {
   formatRange,
   getHeaderContactItems,
@@ -16,61 +16,15 @@ import {
   nonEmptyLines,
   toExternalUrl,
 } from '../shared/helpers'
+import { getCambridgePdfMetrics } from '../configuration/cambridge'
 import { getCambridgePdfFontFamily } from './pdf-fonts'
 
 const getFileStem = (document: CvDocument) =>
   `${document.metadata.title || 'cv'}`.trim().replace(/\s+/g, '-').toLowerCase()
 
-const getDensityTokens = (density: Density) =>
-  density === 'compact'
-    ? {
-        pagePaddingTop: 11.8,
-        pagePaddingBottom: 13.4,
-        pagePaddingX: 13.4,
-        headerGap: 10.2,
-        sectionGap: 5.4,
-        headingGap: 5.4,
-        entryPaddingTop: 3.6,
-        entryPaddingBottom: 4.8,
-        bodySize: 11.2,
-        bodyLineHeight: 1.42,
-        headingSize: 11.4,
-        titleSize: 22.8,
-        titleLineHeight: 1,
-        contactSize: 10.8,
-        sectionLetterSpacing: 1.1,
-        listGap: 3,
-        listMarginTop: 3.6,
-        listPaddingLeft: 13.2,
-        inlineGap: 6,
-        contactGap: 3,
-      }
-    : {
-        pagePaddingTop: 16.8,
-        pagePaddingBottom: 19.2,
-        pagePaddingX: 19.2,
-        headerGap: 10.2,
-        sectionGap: 5.4,
-        headingGap: 5.4,
-        entryPaddingTop: 3.6,
-        entryPaddingBottom: 4.8,
-        bodySize: 12,
-        bodyLineHeight: 1.58,
-        headingSize: 11.4,
-        titleSize: 22.8,
-        titleLineHeight: 1,
-        contactSize: 10.8,
-        sectionLetterSpacing: 1.2,
-        listGap: 3.6,
-        listMarginTop: 3.6,
-        listPaddingLeft: 13.2,
-        inlineGap: 6,
-        contactGap: 3,
-      }
-
 const createStyles = (document: CvDocument) => {
   const fontFamily = getCambridgePdfFontFamily(document.theme.fontFamily)
-  const tokens = getDensityTokens(document.theme.density)
+  const tokens = getCambridgePdfMetrics(document.theme.density)
 
   return StyleSheet.create({
     page: {
@@ -84,7 +38,7 @@ const createStyles = (document: CvDocument) => {
       backgroundColor: '#ffffff',
     },
     header: {
-      paddingBottom: tokens.headerGap,
+      paddingBottom: tokens.headerPaddingBottom,
       textAlign: 'center',
       alignItems: 'center',
     },
@@ -95,7 +49,7 @@ const createStyles = (document: CvDocument) => {
       lineHeight: tokens.titleLineHeight,
     },
     contactLine: {
-      marginTop: 2.4,
+      marginTop: tokens.contactMarginTop,
       flexDirection: 'row',
       flexWrap: 'wrap',
       justifyContent: 'center',
@@ -105,7 +59,7 @@ const createStyles = (document: CvDocument) => {
       flexDirection: 'row',
       alignItems: 'baseline',
       marginRight: tokens.contactGap,
-      marginBottom: 1.5,
+      marginBottom: 0,
     },
     contactText: {
       fontSize: tokens.contactSize,
@@ -116,10 +70,10 @@ const createStyles = (document: CvDocument) => {
       textDecoration: 'underline',
     },
     section: {
-      paddingTop: tokens.sectionGap,
+      paddingTop: tokens.sectionPaddingTop,
     },
     headingRule: {
-      marginBottom: tokens.headingGap,
+      marginBottom: tokens.headingMarginBottom,
       borderBottomWidth: 1,
       borderBottomColor: document.theme.textColor,
       borderBottomStyle: 'solid',
@@ -128,15 +82,15 @@ const createStyles = (document: CvDocument) => {
       fontSize: tokens.headingSize,
       fontWeight: 700,
       textTransform: 'uppercase',
-      letterSpacing: tokens.sectionLetterSpacing,
+      letterSpacing: tokens.headingLetterSpacing,
     },
     body: {
-      marginTop: 3,
+      marginTop: tokens.sublineMarginTop,
       fontSize: tokens.bodySize,
       lineHeight: tokens.bodyLineHeight,
     },
     leadBody: {
-      marginTop: 4,
+      marginTop: tokens.leadBodyMarginTop,
       fontSize: tokens.bodySize,
       lineHeight: tokens.bodyLineHeight,
     },
@@ -158,7 +112,7 @@ const createStyles = (document: CvDocument) => {
     },
     inlinePiece: {
       marginRight: tokens.inlineGap,
-      marginBottom: 2,
+      marginBottom: 0,
     },
     entryPrimary: {
       fontSize: tokens.bodySize,
@@ -176,7 +130,7 @@ const createStyles = (document: CvDocument) => {
       lineHeight: tokens.bodyLineHeight,
     },
     subline: {
-      marginTop: 2,
+      marginTop: tokens.sublineMarginTop,
       fontSize: tokens.bodySize,
       lineHeight: tokens.bodyLineHeight,
     },
@@ -191,12 +145,12 @@ const createStyles = (document: CvDocument) => {
     listItem: {
       flexDirection: 'row',
       marginBottom: tokens.listGap,
-      paddingRight: 8,
+      paddingRight: 6,
     },
     bullet: {
       width: 8,
       fontSize: tokens.bodySize,
-      marginRight: 6,
+      marginRight: tokens.inlineGap,
     },
     listText: {
       flex: 1,
@@ -204,7 +158,7 @@ const createStyles = (document: CvDocument) => {
       lineHeight: tokens.bodyLineHeight,
     },
     inlineRow: {
-      marginTop: 2,
+      marginTop: tokens.sublineMarginTop,
       fontSize: tokens.bodySize,
       lineHeight: tokens.bodyLineHeight,
     },
@@ -214,7 +168,7 @@ const createStyles = (document: CvDocument) => {
     linkRow: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      marginTop: 2,
+      marginTop: tokens.sublineMarginTop,
       alignItems: 'baseline',
     },
   })
