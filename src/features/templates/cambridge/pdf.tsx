@@ -70,14 +70,15 @@ const createStyles = (document: CvDocument) => {
     header: {
       paddingBottom: tokens.headerGap,
       textAlign: 'center',
+      alignItems: 'center',
     },
     title: {
-      marginBottom: 0,
+      marginBottom: 6,
       fontSize: tokens.titleSize,
       fontWeight: 700,
+      lineHeight: 1.15,
     },
     contactLine: {
-      marginTop: 4,
       flexDirection: 'row',
       flexWrap: 'wrap',
       justifyContent: 'center',
