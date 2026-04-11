@@ -23,7 +23,7 @@ The goal is simple: give people a high-quality resume tool without subscriptions
 - `Zod`
 - `Dexie`
 - `docx`
-- `jsPDF`
+- `@react-pdf/renderer`
 
 ## Getting Started
 
@@ -93,7 +93,8 @@ src/
 
 ## Export Notes
 
-- `PDF` export is generated directly to avoid browser print headers and footers
+- `PDF` export is generated as a direct download with real text and clickable links
+- Each template owns its own PDF renderer so export layout can stay close to the preview design
 - `DOCX` export currently includes a Cambridge-style export path
 - Resume data is stored locally in the browser unless the user exports it
 
