@@ -13,7 +13,7 @@ import {
   UnderlineType,
 } from 'docx'
 import type { CvDocument, CvSection } from '../../lib/schema/cv'
-import { formatRange, getHeaderContactItems, nonEmptyLines, toExternalUrl } from '../templates/shared/helpers'
+import { formatRange, getHeaderContactItems, getVisibleSections, nonEmptyLines, toExternalUrl } from '../templates/shared/helpers'
 
 const getFileStem = (document: CvDocument) =>
   `${document.metadata.title || 'cv'}`.trim().replace(/\s+/g, '-').toLowerCase()
@@ -96,7 +96,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
     const items = getHeaderContactItems(document)
 
     if (items.length === 0) {
-      return [makeRun('')]
+      return []
     }
 
     return items.flatMap((item, index) => {
@@ -116,20 +116,34 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
     })
   }
 
-  const children: Paragraph[] = [
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 80 },
-      children: [makeRun(document.profile.fullName, { bold: true, size: 30 })],
-    }),
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 120 },
-      children: makeHeaderLineChildren(),
-    }),
-    sectionHeading('Summary'),
-    bodyLine(document.profile.summary),
-  ]
+  const children: Paragraph[] = []
+
+  if (document.profile.fullName.trim()) {
+    children.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 80 },
+        children: [makeRun(document.profile.fullName, { bold: true, size: 30 })],
+      }),
+    )
+  }
+
+  const headerChildren = makeHeaderLineChildren()
+
+  if (headerChildren.length > 0) {
+    children.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 120 },
+        children: headerChildren,
+      }),
+    )
+  }
+
+  if (document.profile.summary.trim()) {
+    children.push(sectionHeading('Summary'))
+    children.push(bodyLine(document.profile.summary))
+  }
 
   const pushSection = (section: CvSection) => {
     if (!section.visible) {
@@ -224,7 +238,7 @@ export const exportCambridgeDocx = async (document: CvDocument) => {
     }
   }
 
-  document.sections.forEach(pushSection)
+  getVisibleSections(document).forEach(pushSection)
 
   const doc = new Document({
     sections: [

@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { appendSuggestionLine, editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionChips, SuggestionInput } from './SmartField'
 
 export const CertificationsEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -20,15 +22,17 @@ export const CertificationsEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('certifications')} type="button">
             {section.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addCertification} type="button">
-            Add item
-          </button>
         </div>
       }
     >
       <label className="field">
         <span>Section title</span>
-        <input value={section.title} onChange={(event) => updateSectionTitle('certifications', event.target.value)} />
+        <SuggestionInput
+          placeholder={editorHints.sectionTitle}
+          suggestions={['Certifications', 'Licenses & Certifications']}
+          value={section.title}
+          onChange={(event) => updateSectionTitle('certifications', event.target.value)}
+        />
       </label>
       <div className="stack-list">
         {section.items.map((item) => (
@@ -42,24 +46,43 @@ export const CertificationsEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Title</span>
-                <input value={item.title} onChange={(event) => updateCertification(item.id, 'title', event.target.value)} />
+                <SuggestionInput
+                  placeholder="AWS Certified Solutions Architect"
+                  value={item.title}
+                  onChange={(event) => updateCertification(item.id, 'title', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Issuer</span>
-                <input value={item.issuer} onChange={(event) => updateCertification(item.id, 'issuer', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.issuer}
+                  suggestions={['Google', 'Microsoft', 'Amazon Web Services', 'Meta', 'Coursera']}
+                  value={item.issuer}
+                  onChange={(event) => updateCertification(item.id, 'issuer', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Date</span>
-                <input value={item.date} onChange={(event) => updateCertification(item.id, 'date', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.date}
+                  suggestions={editorSuggestions.dates}
+                  value={item.date}
+                  onChange={(event) => updateCertification(item.id, 'date', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>URL</span>
-                <input value={item.url} onChange={(event) => updateCertification(item.id, 'url', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.projectUrl}
+                  value={item.url}
+                  onChange={(event) => updateCertification(item.id, 'url', event.target.value)}
+                />
               </label>
             </div>
             <label className="field field--stacked">
               <span>Details</span>
               <textarea
+                placeholder={editorHints.textarea}
                 rows={3}
                 value={item.details.join('\n')}
                 onChange={(event) =>
@@ -71,9 +94,15 @@ export const CertificationsEditor = () => {
                 }
               />
             </label>
+            <SuggestionChips
+              label="Credential detail prompts"
+              suggestions={editorSuggestions.detailLines}
+              onSelect={(suggestion) => updateCertification(item.id, 'details', appendSuggestionLine(item.details, suggestion))}
+            />
           </article>
         ))}
       </div>
+      <AddItemButton label="Add certification" onClick={addCertification} />
     </SectionCard>
   )
 }

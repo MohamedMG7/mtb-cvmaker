@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { appendSuggestionLine, editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionChips, SuggestionInput } from './SmartField'
 
 export const ProjectsEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -19,9 +21,6 @@ export const ProjectsEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('projects')} type="button">
             {projects.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addProject} type="button">
-            Add project
-          </button>
         </div>
       }
     >
@@ -37,36 +36,44 @@ export const ProjectsEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Project name</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.projectName}
                   value={item.name}
                   onChange={(event) => updateProject(item.id, 'name', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>Project URL</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.projectUrl}
                   value={item.url}
                   onChange={(event) => updateProject(item.id, 'url', event.target.value)}
                 />
               </label>
               <label className="field field--full">
                 <span>Subtitle</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.projectSubtitle}
+                  suggestions={editorSuggestions.projectTypes}
                   value={item.subtitle}
                   onChange={(event) => updateProject(item.id, 'subtitle', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>Start date</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.date}
+                  suggestions={editorSuggestions.dates}
                   value={item.startDate}
                   onChange={(event) => updateProject(item.id, 'startDate', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>End date</span>
-                <input
+                <SuggestionInput
                   disabled={item.current}
+                  placeholder="Present or 2026"
+                  suggestions={editorSuggestions.dates}
                   value={item.endDate}
                   onChange={(event) => updateProject(item.id, 'endDate', event.target.value)}
                 />
@@ -83,6 +90,7 @@ export const ProjectsEditor = () => {
             <label className="field field--stacked">
               <span>Highlights</span>
               <textarea
+                placeholder={editorHints.textarea}
                 rows={4}
                 value={item.highlights.join('\n')}
                 onChange={(event) =>
@@ -94,9 +102,15 @@ export const ProjectsEditor = () => {
                 }
               />
             </label>
+            <SuggestionChips
+              label="Project highlight starters"
+              suggestions={editorSuggestions.highlightLines}
+              onSelect={(suggestion) => updateProject(item.id, 'highlights', appendSuggestionLine(item.highlights, suggestion))}
+            />
           </article>
         ))}
       </div>
+      <AddItemButton label="Add project" onClick={addProject} />
     </SectionCard>
   )
 }

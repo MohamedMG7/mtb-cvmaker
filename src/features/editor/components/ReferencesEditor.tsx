@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionInput } from './SmartField'
 
 export const ReferencesEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -20,15 +22,17 @@ export const ReferencesEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('references')} type="button">
             {section.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addReference} type="button">
-            Add reference
-          </button>
         </div>
       }
     >
       <label className="field">
         <span>Section title</span>
-        <input value={section.title} onChange={(event) => updateSectionTitle('references', event.target.value)} />
+        <SuggestionInput
+          placeholder={editorHints.sectionTitle}
+          suggestions={['References', 'Professional References']}
+          value={section.title}
+          onChange={(event) => updateSectionTitle('references', event.target.value)}
+        />
       </label>
       <div className="stack-list">
         {section.items.map((item) => (
@@ -42,23 +46,34 @@ export const ReferencesEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Name</span>
-                <input value={item.name} onChange={(event) => updateReference(item.id, 'name', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.referenceName}
+                  value={item.name}
+                  onChange={(event) => updateReference(item.id, 'name', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Relationship</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.relationship}
+                  suggestions={editorSuggestions.relationships}
                   value={item.relationship}
                   onChange={(event) => updateReference(item.id, 'relationship', event.target.value)}
                 />
               </label>
               <label className="field field--full">
                 <span>Contact</span>
-                <input value={item.contact} onChange={(event) => updateReference(item.id, 'contact', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.contact}
+                  value={item.contact}
+                  onChange={(event) => updateReference(item.id, 'contact', event.target.value)}
+                />
               </label>
             </div>
             <label className="field field--stacked">
               <span>Details</span>
               <textarea
+                placeholder="Optional note about how this person knows your work."
                 rows={2}
                 value={item.details}
                 onChange={(event) => updateReference(item.id, 'details', event.target.value)}
@@ -67,6 +82,7 @@ export const ReferencesEditor = () => {
           </article>
         ))}
       </div>
+      <AddItemButton label="Add reference" onClick={addReference} />
     </SectionCard>
   )
 }

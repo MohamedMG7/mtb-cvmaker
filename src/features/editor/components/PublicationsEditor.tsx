@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { appendSuggestionLine, editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionChips, SuggestionInput } from './SmartField'
 
 export const PublicationsEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -20,15 +22,17 @@ export const PublicationsEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('publications')} type="button">
             {section.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addPublication} type="button">
-            Add item
-          </button>
         </div>
       }
     >
       <label className="field">
         <span>Section title</span>
-        <input value={section.title} onChange={(event) => updateSectionTitle('publications', event.target.value)} />
+        <SuggestionInput
+          placeholder={editorHints.sectionTitle}
+          suggestions={['Publications', 'Articles & Talks']}
+          value={section.title}
+          onChange={(event) => updateSectionTitle('publications', event.target.value)}
+        />
       </label>
       <div className="stack-list">
         {section.items.map((item) => (
@@ -42,27 +46,42 @@ export const PublicationsEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Title</span>
-                <input value={item.title} onChange={(event) => updatePublication(item.id, 'title', event.target.value)} />
+                <SuggestionInput
+                  placeholder="Designing Better Hiring Workflows"
+                  value={item.title}
+                  onChange={(event) => updatePublication(item.id, 'title', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Publisher</span>
-                <input
+                <SuggestionInput
+                  placeholder="Journal, conference, or platform"
                   value={item.publisher}
                   onChange={(event) => updatePublication(item.id, 'publisher', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>Date</span>
-                <input value={item.date} onChange={(event) => updatePublication(item.id, 'date', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.date}
+                  suggestions={editorSuggestions.dates}
+                  value={item.date}
+                  onChange={(event) => updatePublication(item.id, 'date', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>URL</span>
-                <input value={item.url} onChange={(event) => updatePublication(item.id, 'url', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.projectUrl}
+                  value={item.url}
+                  onChange={(event) => updatePublication(item.id, 'url', event.target.value)}
+                />
               </label>
             </div>
             <label className="field field--stacked">
               <span>Details</span>
               <textarea
+                placeholder={editorHints.textarea}
                 rows={3}
                 value={item.details.join('\n')}
                 onChange={(event) =>
@@ -74,9 +93,15 @@ export const PublicationsEditor = () => {
                 }
               />
             </label>
+            <SuggestionChips
+              label="Publication detail prompts"
+              suggestions={editorSuggestions.detailLines}
+              onSelect={(suggestion) => updatePublication(item.id, 'details', appendSuggestionLine(item.details, suggestion))}
+            />
           </article>
         ))}
       </div>
+      <AddItemButton label="Add publication" onClick={addPublication} />
     </SectionCard>
   )
 }

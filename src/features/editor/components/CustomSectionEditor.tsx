@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { appendSuggestionLine, editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionChips, SuggestionInput } from './SmartField'
 
 export const CustomSectionEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -20,15 +22,17 @@ export const CustomSectionEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('custom')} type="button">
             {section.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addCustomItem} type="button">
-            Add item
-          </button>
         </div>
       }
     >
       <label className="field">
         <span>Section title</span>
-        <input value={section.title} onChange={(event) => updateSectionTitle('custom', event.target.value)} />
+        <SuggestionInput
+          placeholder={editorHints.sectionTitle}
+          suggestions={editorSuggestions.customTitles}
+          value={section.title}
+          onChange={(event) => updateSectionTitle('custom', event.target.value)}
+        />
       </label>
       <div className="stack-list">
         {section.items.map((item) => (
@@ -42,16 +46,26 @@ export const CustomSectionEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Title</span>
-                <input value={item.title} onChange={(event) => updateCustomItem(item.id, 'title', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.customTitle}
+                  suggestions={editorSuggestions.customTitles}
+                  value={item.title}
+                  onChange={(event) => updateCustomItem(item.id, 'title', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Subtitle</span>
-                <input value={item.subtitle} onChange={(event) => updateCustomItem(item.id, 'subtitle', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.customSubtitle}
+                  value={item.subtitle}
+                  onChange={(event) => updateCustomItem(item.id, 'subtitle', event.target.value)}
+                />
               </label>
             </div>
             <label className="field field--stacked">
               <span>Details</span>
               <textarea
+                placeholder={editorHints.textarea}
                 rows={3}
                 value={item.details.join('\n')}
                 onChange={(event) =>
@@ -63,9 +77,15 @@ export const CustomSectionEditor = () => {
                 }
               />
             </label>
+            <SuggestionChips
+              label="Custom section prompts"
+              suggestions={editorSuggestions.detailLines}
+              onSelect={(suggestion) => updateCustomItem(item.id, 'details', appendSuggestionLine(item.details, suggestion))}
+            />
           </article>
         ))}
       </div>
+      <AddItemButton label="Add custom item" onClick={addCustomItem} />
     </SectionCard>
   )
 }

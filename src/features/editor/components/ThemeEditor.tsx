@@ -3,9 +3,7 @@ import { templateRegistry } from '../../templates/registry'
 import { useCvStore } from '../store/useCvStore'
 import { SectionCard } from './SectionCard'
 
-const fontOptions = ['Literata', 'Spectral', 'Alegreya Sans']
-
-const extendedFontOptions = [...fontOptions, 'Calibri']
+const fontOptions = ['Calibri', 'Times New Roman']
 
 export const ThemeEditor = () => {
   const theme = useCvStore((state) => state.document.theme)
@@ -16,7 +14,7 @@ export const ThemeEditor = () => {
   return (
     <SectionCard
       title="Presentation"
-      description="Choose the overall visual direction and editing mode."
+      description="Choose the overall visual direction and keep the editing surface calm."
       action={
         <div className="segmented-control">
           {(['simple', 'advanced'] as const).map((mode) => (
@@ -50,12 +48,12 @@ export const ThemeEditor = () => {
       {editorMode === 'advanced' ? (
         <div className="field-grid field-grid--three">
           <label className="field">
-            <span>Font family</span>
+            <span>Font</span>
             <select
               value={theme.fontFamily}
               onChange={(event) => updateThemeField('fontFamily', event.target.value)}
             >
-              {extendedFontOptions.map((font) => (
+              {fontOptions.map((font) => (
                 <option key={font} value={font}>
                   {font}
                 </option>

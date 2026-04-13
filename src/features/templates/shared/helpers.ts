@@ -63,6 +63,14 @@ const densityTokens = {
   },
 } as const
 
+const getPreviewFontFamily = (fontFamily: string) => {
+  if (fontFamily === 'Times New Roman') {
+    return '"Times New Roman", Times, serif'
+  }
+
+  return 'Calibri, "Segoe UI", Arial, sans-serif'
+}
+
 export const getDensityStyleTokens = (density: Density) => densityTokens[density]
 
 export const formatRange = (startDate: string, endDate: string, current?: boolean) => {
@@ -76,7 +84,54 @@ export const joinLines = (values: string[]) => nonEmptyLines(values).join(' ')
 
 export const toExternalUrl = (value: string) => (/^https?:\/\//i.test(value) ? value : `https://${value}`)
 
-export const getVisibleSections = (document: CvDocument) => document.sections.filter((section) => section.visible)
+const hasMeaningfulSectionContent = (section: CvSection) => {
+  switch (section.type) {
+    case 'experience':
+    case 'volunteer':
+      return section.items.some((item) =>
+        [item.role, item.organization, item.location, item.startDate, item.endDate, ...item.highlights]
+          .some((value) => value.trim().length > 0),
+      )
+    case 'projects':
+      return section.items.some((item) =>
+        [item.name, item.subtitle, item.url, item.startDate, item.endDate, ...item.highlights]
+          .some((value) => value.trim().length > 0),
+      )
+    case 'education':
+      return section.items.some((item) =>
+        [item.degree, item.school, item.location, item.startDate, item.endDate, ...item.details]
+          .some((value) => value.trim().length > 0),
+      )
+    case 'skills':
+      return section.groups.some((group) => [group.name, ...group.items].some((value) => value.trim().length > 0))
+    case 'certifications':
+    case 'awards':
+      return section.items.some((item) =>
+        [item.title, item.issuer, item.date, item.url, ...item.details].some((value) => value.trim().length > 0),
+      )
+    case 'publications':
+      return section.items.some((item) =>
+        [item.title, item.publisher, item.date, item.url, ...item.details].some((value) => value.trim().length > 0),
+      )
+    case 'languages':
+      return section.items.some((item) => [item.name, item.level].some((value) => value.trim().length > 0))
+    case 'interests':
+      return section.items.some((item) => item.name.trim().length > 0)
+    case 'links':
+      return section.items.some((item) => [item.label, item.url].some((value) => value.trim().length > 0))
+    case 'references':
+      return section.items.some((item) =>
+        [item.name, item.relationship, item.contact, item.details].some((value) => value.trim().length > 0),
+      )
+    case 'custom':
+      return section.items.some((item) =>
+        [item.title, item.subtitle, ...item.details].some((value) => value.trim().length > 0),
+      )
+  }
+}
+
+export const getVisibleSections = (document: CvDocument) =>
+  document.sections.filter((section) => section.visible && hasMeaningfulSectionContent(section))
 
 export const getHeaderLinks = (document: CvDocument): HeaderLink[] => {
   const section = document.sections.find((item) => item.type === 'links')
@@ -166,6 +221,6 @@ export const getDocumentStyle = (document: CvDocument): CSSProperties => ({
   ['--body-size' as string]: getDensityStyleTokens(document.theme.density).bodySize,
   ['--body-line-height' as string]: getDensityStyleTokens(document.theme.density).bodyLineHeight,
   ['--chip-padding' as string]: getDensityStyleTokens(document.theme.density).chipPadding,
-  ['--page-font-family' as string]: document.theme.fontFamily,
-  fontFamily: document.theme.fontFamily,
+  ['--page-font-family' as string]: getPreviewFontFamily(document.theme.fontFamily),
+  fontFamily: getPreviewFontFamily(document.theme.fontFamily),
 })

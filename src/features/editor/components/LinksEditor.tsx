@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionInput } from './SmartField'
 
 export const LinksEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -19,9 +21,6 @@ export const LinksEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('links')} type="button">
             {links.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addLink} type="button">
-            Add link
-          </button>
         </div>
       }
     >
@@ -37,14 +36,17 @@ export const LinksEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Label</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.linkLabel}
+                  suggestions={editorSuggestions.linkLabels}
                   value={item.label}
                   onChange={(event) => updateLink(item.id, 'label', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>URL</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.projectUrl}
                   value={item.url}
                   onChange={(event) => updateLink(item.id, 'url', event.target.value)}
                 />
@@ -71,6 +73,7 @@ export const LinksEditor = () => {
           </article>
         ))}
       </div>
+      <AddItemButton label="Add link" onClick={addLink} />
     </SectionCard>
   )
 }

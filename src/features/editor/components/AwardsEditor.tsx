@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { appendSuggestionLine, editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionChips, SuggestionInput } from './SmartField'
 
 export const AwardsEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -20,15 +22,17 @@ export const AwardsEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('awards')} type="button">
             {section.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addAward} type="button">
-            Add award
-          </button>
         </div>
       }
     >
       <label className="field">
         <span>Section title</span>
-        <input value={section.title} onChange={(event) => updateSectionTitle('awards', event.target.value)} />
+        <SuggestionInput
+          placeholder={editorHints.sectionTitle}
+          suggestions={['Awards', 'Honors & Awards']}
+          value={section.title}
+          onChange={(event) => updateSectionTitle('awards', event.target.value)}
+        />
       </label>
       <div className="stack-list">
         {section.items.map((item) => (
@@ -42,24 +46,42 @@ export const AwardsEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Award</span>
-                <input value={item.title} onChange={(event) => updateAward(item.id, 'title', event.target.value)} />
+                <SuggestionInput
+                  placeholder="Employee of the Year"
+                  value={item.title}
+                  onChange={(event) => updateAward(item.id, 'title', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Issuer</span>
-                <input value={item.issuer} onChange={(event) => updateAward(item.id, 'issuer', event.target.value)} />
+                <SuggestionInput
+                  placeholder="Your company or institution"
+                  value={item.issuer}
+                  onChange={(event) => updateAward(item.id, 'issuer', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Date</span>
-                <input value={item.date} onChange={(event) => updateAward(item.id, 'date', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.date}
+                  suggestions={editorSuggestions.dates}
+                  value={item.date}
+                  onChange={(event) => updateAward(item.id, 'date', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>URL</span>
-                <input value={item.url} onChange={(event) => updateAward(item.id, 'url', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.projectUrl}
+                  value={item.url}
+                  onChange={(event) => updateAward(item.id, 'url', event.target.value)}
+                />
               </label>
             </div>
             <label className="field field--stacked">
               <span>Details</span>
               <textarea
+                placeholder={editorHints.textarea}
                 rows={3}
                 value={item.details.join('\n')}
                 onChange={(event) =>
@@ -71,9 +93,15 @@ export const AwardsEditor = () => {
                 }
               />
             </label>
+            <SuggestionChips
+              label="Award detail prompts"
+              suggestions={editorSuggestions.detailLines}
+              onSelect={(suggestion) => updateAward(item.id, 'details', appendSuggestionLine(item.details, suggestion))}
+            />
           </article>
         ))}
       </div>
+      <AddItemButton label="Add award" onClick={addAward} />
     </SectionCard>
   )
 }

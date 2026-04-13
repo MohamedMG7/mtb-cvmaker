@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionInput } from './SmartField'
 
 export const LanguagesEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -20,15 +22,17 @@ export const LanguagesEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('languages')} type="button">
             {section.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addLanguage} type="button">
-            Add language
-          </button>
         </div>
       }
     >
       <label className="field">
         <span>Section title</span>
-        <input value={section.title} onChange={(event) => updateSectionTitle('languages', event.target.value)} />
+        <SuggestionInput
+          placeholder={editorHints.sectionTitle}
+          suggestions={['Languages', 'Language Skills']}
+          value={section.title}
+          onChange={(event) => updateSectionTitle('languages', event.target.value)}
+        />
       </label>
       <div className="stack-list">
         {section.items.map((item) => (
@@ -42,16 +46,27 @@ export const LanguagesEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Language</span>
-                <input value={item.name} onChange={(event) => updateLanguage(item.id, 'name', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.language}
+                  suggestions={['Arabic', 'English', 'French', 'German', 'Spanish']}
+                  value={item.name}
+                  onChange={(event) => updateLanguage(item.id, 'name', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Level</span>
-                <input value={item.level} onChange={(event) => updateLanguage(item.id, 'level', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.languageLevel}
+                  suggestions={editorSuggestions.languageLevels}
+                  value={item.level}
+                  onChange={(event) => updateLanguage(item.id, 'level', event.target.value)}
+                />
               </label>
             </div>
           </article>
         ))}
       </div>
+      <AddItemButton label="Add language" onClick={addLanguage} />
     </SectionCard>
   )
 }

@@ -1,6 +1,8 @@
 import { getSection, splitListField } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionInput } from './SmartField'
 
 export const SkillsEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -19,9 +21,6 @@ export const SkillsEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('skills')} type="button">
             {skills.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addSkillGroup} type="button">
-            Add group
-          </button>
         </div>
       }
     >
@@ -37,14 +36,17 @@ export const SkillsEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Group name</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.skillGroup}
+                  suggestions={editorSuggestions.skillGroupNames}
                   value={group.name}
                   onChange={(event) => updateSkillGroup(group.id, 'name', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>Comma-separated skills</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.skillItems}
                   value={group.items.join(', ')}
                   onChange={(event) =>
                     updateSkillGroup(group.id, 'items', splitListField(event.target.value))
@@ -55,6 +57,7 @@ export const SkillsEditor = () => {
           </article>
         ))}
       </div>
+      <AddItemButton label="Add skill group" onClick={addSkillGroup} />
     </SectionCard>
   )
 }

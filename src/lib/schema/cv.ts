@@ -302,11 +302,27 @@ const asEnum = <TOption extends string>(
   fallback: TOption,
 ) => (typeof value === 'string' && options.includes(value as TOption) ? (value as TOption) : fallback)
 
+const normalizeFontFamily = (value: unknown) => {
+  if (value === 'Times New Roman' || value === 'Calibri') {
+    return value
+  }
+
+  if (value === 'Literata' || value === 'Spectral') {
+    return 'Times New Roman'
+  }
+
+  if (value === 'Alegreya Sans') {
+    return 'Calibri'
+  }
+
+  return 'Calibri'
+}
+
 const makeTimedHighlightsItem = (
-  role = 'Frontend Engineer',
-  organization = 'Open Studio',
-  location = 'Remote',
-  startDate = '2023',
+  role = '',
+  organization = '',
+  location = '',
+  startDate = '',
 ): ExperienceItem => ({
   id: makeId(),
   role,
@@ -314,47 +330,41 @@ const makeTimedHighlightsItem = (
   location,
   startDate,
   endDate: '',
-  current: true,
-  highlights: [
-    'Designed and shipped polished interfaces for workflow-heavy tools.',
-    'Improved feature delivery by standardizing reusable UI patterns.',
-  ],
+  current: false,
+  highlights: [],
 })
 
 const makeProjectItem = (): ProjectItem => ({
   id: makeId(),
-  name: 'cvMaker',
-  subtitle: 'Open-source CV builder in React and TypeScript',
-  url: 'github.com/yourname/cvmaker',
-  startDate: '2026',
+  name: '',
+  subtitle: '',
+  url: '',
+  startDate: '',
   endDate: '',
-  current: true,
-  highlights: [
-    'Built a local-first editor with live preview and reusable resume templates.',
-    'Planned exports for PDF and DOCX from a shared document model.',
-  ],
+  current: false,
+  highlights: [],
 })
 
 const makeEducationItem = (): EducationItem => ({
   id: makeId(),
-  degree: 'BSc in Computer Science',
-  school: 'Example University',
-  location: 'City',
-  startDate: '2018',
-  endDate: '2022',
-  details: ['Graduated with a focus on systems, UX, and product engineering.'],
+  degree: '',
+  school: '',
+  location: '',
+  startDate: '',
+  endDate: '',
+  details: [],
 })
 
 const makeSkillGroup = (): SkillGroup => ({
   id: makeId(),
-  name: 'Core',
-  items: ['TypeScript', 'React', 'Design Systems', 'Accessibility'],
+  name: '',
+  items: [],
 })
 
 const makeLinkItem = (): LinkItem => ({
   id: makeId(),
-  label: 'Portfolio',
-  url: 'https://portfolio.dev',
+  label: '',
+  url: '',
   headerDisplay: 'label',
 })
 
@@ -362,18 +372,18 @@ const makeDatedItem = (title: string, issuer: string): CertificationItem => ({
   id: makeId(),
   title,
   issuer,
-  date: '2025',
+  date: '',
   url: '',
-  details: ['Include a concise note about scope, level, or relevance.'],
+  details: [],
 })
 
 const makePublicationItem = (): PublicationItem => ({
   id: makeId(),
-  title: 'Designing Faster Product Workflows',
-  publisher: 'Product Systems Journal',
-  date: '2024',
+  title: '',
+  publisher: '',
+  date: '',
   url: '',
-  details: ['Article exploring systems-based collaboration between design and engineering.'],
+  details: [],
 })
 
 const makeLanguageItem = (name = 'English', level = 'Native'): LanguageItem => ({
@@ -382,24 +392,24 @@ const makeLanguageItem = (name = 'English', level = 'Native'): LanguageItem => (
   level,
 })
 
-const makeInterestItem = (name = 'Editorial design'): InterestItem => ({
+const makeInterestItem = (name = ''): InterestItem => ({
   id: makeId(),
   name,
 })
 
 const makeReferenceItem = (): ReferenceItem => ({
   id: makeId(),
-  name: 'Jordan Lee',
-  relationship: 'Former manager',
-  contact: 'jordan.lee@example.com',
-  details: 'Available on request or by direct introduction.',
+  name: '',
+  relationship: '',
+  contact: '',
+  details: '',
 })
 
 const makeCustomItem = (): CustomItem => ({
   id: makeId(),
-  title: 'Custom entry',
-  subtitle: 'Add your own category details',
-  details: ['Use this section for domain-specific experience or credentials.'],
+  title: '',
+  subtitle: '',
+  details: [],
 })
 
 const createEmptySectionMap = () => ({
@@ -408,91 +418,91 @@ const createEmptySectionMap = () => ({
     type: 'experience' as const,
     title: 'Experience',
     visible: true,
-    items: [makeTimedHighlightsItem()],
+    items: [],
   },
   projects: {
     id: makeId(),
     type: 'projects' as const,
     title: 'Projects',
     visible: true,
-    items: [makeProjectItem()],
+    items: [],
   },
   education: {
     id: makeId(),
     type: 'education' as const,
     title: 'Education',
     visible: true,
-    items: [makeEducationItem()],
+    items: [],
   },
   skills: {
     id: makeId(),
     type: 'skills' as const,
     title: 'Skills',
     visible: true,
-    groups: [makeSkillGroup()],
+    groups: [],
   },
   certifications: {
     id: makeId(),
     type: 'certifications' as const,
     title: 'Certifications',
     visible: false,
-    items: [makeDatedItem('AWS Certified Cloud Practitioner', 'Amazon Web Services')],
+    items: [],
   },
   awards: {
     id: makeId(),
     type: 'awards' as const,
     title: 'Awards',
     visible: false,
-    items: [makeDatedItem('Dean\'s List', 'Example University')],
+    items: [],
   },
   volunteer: {
     id: makeId(),
     type: 'volunteer' as const,
     title: 'Volunteer Experience',
     visible: false,
-    items: [makeTimedHighlightsItem('Mentor', 'Open Learning Collective', 'Remote', '2024')],
+    items: [],
   },
   publications: {
     id: makeId(),
     type: 'publications' as const,
     title: 'Publications',
     visible: false,
-    items: [makePublicationItem()],
+    items: [],
   },
   languages: {
     id: makeId(),
     type: 'languages' as const,
     title: 'Languages',
     visible: false,
-    items: [makeLanguageItem()],
+    items: [],
   },
   interests: {
     id: makeId(),
     type: 'interests' as const,
     title: 'Interests',
     visible: false,
-    items: [makeInterestItem()],
+    items: [],
   },
   links: {
     id: makeId(),
     type: 'links' as const,
     title: 'Links',
     visible: true,
-    items: [makeLinkItem()],
+    items: [],
   },
   references: {
     id: makeId(),
     type: 'references' as const,
     title: 'References',
     visible: false,
-    items: [makeReferenceItem()],
+    items: [],
   },
   custom: {
     id: makeId(),
     type: 'custom' as const,
     title: 'Custom Section',
     visible: false,
-    items: [makeCustomItem()],
+    items: [],
   },
 })
 
@@ -671,43 +681,7 @@ const normalizeSections = (value: unknown): CvSection[] => {
     },
   ] as CvSection[]
 
-  return sections.map((section) => {
-    if ('items' in section && section.items.length === 0) {
-      switch (section.type) {
-        case 'experience':
-        case 'volunteer':
-          return { ...section, items: [makeTimedHighlightsItem()] }
-        case 'projects':
-          return { ...section, items: [makeProjectItem()] }
-        case 'education':
-          return { ...section, items: [makeEducationItem()] }
-        case 'certifications':
-          return { ...section, items: [makeDatedItem('New Certification', 'Issuer')] }
-        case 'awards':
-          return { ...section, items: [makeDatedItem('New Award', 'Issuer')] }
-        case 'publications':
-          return { ...section, items: [makePublicationItem()] }
-        case 'languages':
-          return { ...section, items: [makeLanguageItem()] }
-        case 'interests':
-          return { ...section, items: [makeInterestItem()] }
-        case 'links':
-          return { ...section, items: [makeLinkItem()] }
-        case 'references':
-          return { ...section, items: [makeReferenceItem()] }
-        case 'custom':
-          return { ...section, items: [makeCustomItem()] }
-        default:
-          return section
-      }
-    }
-
-    if (section.type === 'skills' && section.groups.length === 0) {
-      return { ...section, groups: [makeSkillGroup()] }
-    }
-
-    return section
-  }) as CvSection[]
+  return sections as CvSection[]
 }
 
 const normalizeDocument = (value: unknown) => {
@@ -721,26 +695,23 @@ const normalizeDocument = (value: unknown) => {
     version: CURRENT_DOCUMENT_VERSION,
     metadata: {
       id: asString(metadata.id, makeId()),
-      title: asString(metadata.title, 'My CV'),
+      title: asString(metadata.title),
       createdAt: asString(metadata.createdAt, timestamp),
       updatedAt: asString(metadata.updatedAt, timestamp),
     },
     profile: {
-      fullName: asString(profile.fullName, 'Your Name'),
-      headline: asString(profile.headline, 'Product-minded builder'),
-      email: asString(profile.email, 'you@example.com'),
-      phone: asString(profile.phone, '+1 555 0100'),
-      location: asString(profile.location, 'City, Country'),
-      website: asString(profile.website, 'portfolio.dev'),
-      summary: asString(
-        profile.summary,
-        'Sharp, adaptable professional focused on building clear experiences, shipping quickly, and turning ideas into useful products.',
-      ),
+      fullName: asString(profile.fullName),
+      headline: asString(profile.headline),
+      email: asString(profile.email),
+      phone: asString(profile.phone),
+      location: asString(profile.location),
+      website: asString(profile.website),
+      summary: asString(profile.summary),
     },
     theme: {
-      templateId: asEnum(theme.templateId, templateIds, 'minimal'),
-      textColor: asString(theme.textColor, asString(theme.accentColor, '#1f1b19')),
-      fontFamily: asString(theme.fontFamily, 'Literata'),
+      templateId: asEnum(theme.templateId, templateIds, 'cambridge'),
+      textColor: asString(theme.textColor, asString(theme.accentColor, '#111827')),
+      fontFamily: normalizeFontFamily(theme.fontFamily),
       density: asEnum(theme.density, densityOptions, 'comfortable'),
     },
     sections: normalizeSections(document.sections),
@@ -752,24 +723,23 @@ export const createDefaultDocument = (): CvDocument =>
     version: CURRENT_DOCUMENT_VERSION,
     metadata: {
       id: makeId(),
-      title: 'My CV',
+      title: '',
       createdAt: now(),
       updatedAt: now(),
     },
     profile: {
-      fullName: 'Your Name',
-      headline: 'Product-minded builder',
-      email: 'you@example.com',
-      phone: '+1 555 0100',
-      location: 'City, Country',
-      website: 'portfolio.dev',
-      summary:
-        'Sharp, adaptable professional focused on building clear experiences, shipping quickly, and turning ideas into useful products.',
+      fullName: '',
+      headline: '',
+      email: '',
+      phone: '',
+      location: '',
+      website: '',
+      summary: '',
     },
     theme: {
-      templateId: 'minimal',
-      textColor: '#1f1b19',
-      fontFamily: 'Literata',
+      templateId: 'cambridge',
+      textColor: '#111827',
+      fontFamily: 'Calibri',
       density: 'comfortable',
     },
     sections: Object.values(createEmptySectionMap()),

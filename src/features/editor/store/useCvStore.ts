@@ -110,89 +110,89 @@ const createTimedItem = (role: string, organization: string): ExperienceItem => 
   id: makeId(),
   role,
   organization,
-  location: 'Remote',
-  startDate: '2024',
+  location: '',
+  startDate: '',
   endDate: '',
-  current: true,
-  highlights: ['Describe the outcome, scope, or impact of your work.'],
+  current: false,
+  highlights: [],
 })
 
 const createProject = (): ProjectItem => ({
   id: makeId(),
-  name: 'New Project',
-  subtitle: 'Short description or product context',
-  url: 'project-url.com',
-  startDate: '2024',
+  name: '',
+  subtitle: '',
+  url: '',
+  startDate: '',
   endDate: '',
-  current: true,
-  highlights: ['Describe what you built, improved, or launched.'],
+  current: false,
+  highlights: [],
 })
 
 const createEducation = (): EducationItem => ({
   id: makeId(),
-  degree: 'New Degree',
-  school: 'School',
-  location: 'City',
-  startDate: '2020',
-  endDate: '2024',
-  details: ['Add coursework, honors, or standout achievements.'],
+  degree: '',
+  school: '',
+  location: '',
+  startDate: '',
+  endDate: '',
+  details: [],
 })
 
 const createSkillGroup = (): SkillGroup => ({
   id: makeId(),
-  name: 'New Group',
-  items: ['Skill A', 'Skill B'],
+  name: '',
+  items: [],
 })
 
 const createDatedItem = (title: string, issuer: string): CertificationItem => ({
   id: makeId(),
   title,
   issuer,
-  date: '2025',
+  date: '',
   url: '',
-  details: ['Add a concise note about relevance or scope.'],
+  details: [],
 })
 
 const createPublication = (): PublicationItem => ({
   id: makeId(),
-  title: 'New Publication',
-  publisher: 'Publisher',
-  date: '2025',
+  title: '',
+  publisher: '',
+  date: '',
   url: '',
-  details: ['Summarize the publication or presentation.'],
+  details: [],
 })
 
 const createLanguage = (): LanguageItem => ({
   id: makeId(),
-  name: 'Language',
-  level: 'Professional working proficiency',
+  name: '',
+  level: '',
 })
 
 const createInterest = (): InterestItem => ({
   id: makeId(),
-  name: 'Interest',
+  name: '',
 })
 
 const createLink = (): LinkItem => ({
   id: makeId(),
-  label: 'New Link',
-  url: 'https://example.com',
+  label: '',
+  url: '',
   headerDisplay: 'label',
 })
 
 const createReference = (): ReferenceItem => ({
   id: makeId(),
-  name: 'Reference Name',
-  relationship: 'Relationship',
-  contact: 'email@example.com',
-  details: 'Available upon request.',
+  name: '',
+  relationship: '',
+  contact: '',
+  details: '',
 })
 
 const createCustomItem = (): CustomItem => ({
   id: makeId(),
-  title: 'Custom entry',
-  subtitle: 'Describe the entry',
-  details: ['Add relevant context, accomplishments, or notes.'],
+  title: '',
+  subtitle: '',
+  details: [],
 })
 
 export const useCvStore = create<CvStore>((set) => ({
@@ -280,7 +280,7 @@ export const useCvStore = create<CvStore>((set) => ({
         updateSection(state.document, 'experience', (section) =>
           section.type !== 'experience'
             ? section
-            : { ...section, items: [...section.items, createTimedItem('New Role', 'Company')] },
+            : { ...section, items: [...section.items, createTimedItem('', '')] },
         ),
       ),
     })),
@@ -422,7 +422,7 @@ export const useCvStore = create<CvStore>((set) => ({
             ? section
             : {
                 ...section,
-                items: [...section.items, createDatedItem('New Certification', 'Issuer')],
+                items: [...section.items, createDatedItem('', '')],
               },
         ),
       ),
@@ -458,7 +458,7 @@ export const useCvStore = create<CvStore>((set) => ({
         updateSection(state.document, 'awards', (section) =>
           section.type !== 'awards'
             ? section
-            : { ...section, items: [...section.items, createDatedItem('New Award', 'Issuer')] },
+            : { ...section, items: [...section.items, createDatedItem('', '')] },
         ),
       ),
     })),
@@ -493,7 +493,7 @@ export const useCvStore = create<CvStore>((set) => ({
         updateSection(state.document, 'volunteer', (section) =>
           section.type !== 'volunteer'
             ? section
-            : { ...section, items: [...section.items, createTimedItem('Volunteer Role', 'Organization')] },
+            : { ...section, items: [...section.items, createTimedItem('', '')] },
         ),
       ),
     })),

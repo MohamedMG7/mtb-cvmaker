@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionInput } from './SmartField'
 
 export const InterestsEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -20,15 +22,17 @@ export const InterestsEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('interests')} type="button">
             {section.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addInterest} type="button">
-            Add interest
-          </button>
         </div>
       }
     >
       <label className="field">
         <span>Section title</span>
-        <input value={section.title} onChange={(event) => updateSectionTitle('interests', event.target.value)} />
+        <SuggestionInput
+          placeholder={editorHints.sectionTitle}
+          suggestions={['Interests', 'Personal Interests']}
+          value={section.title}
+          onChange={(event) => updateSectionTitle('interests', event.target.value)}
+        />
       </label>
       <div className="stack-list">
         {section.items.map((item) => (
@@ -41,11 +45,17 @@ export const InterestsEditor = () => {
             </div>
             <label className="field">
               <span>Interest</span>
-              <input value={item.name} onChange={(event) => updateInterest(item.id, event.target.value)} />
+              <SuggestionInput
+                placeholder={editorHints.interest}
+                suggestions={editorSuggestions.interests}
+                value={item.name}
+                onChange={(event) => updateInterest(item.id, event.target.value)}
+              />
             </label>
           </article>
         ))}
       </div>
+      <AddItemButton label="Add interest" onClick={addInterest} />
     </SectionCard>
   )
 }

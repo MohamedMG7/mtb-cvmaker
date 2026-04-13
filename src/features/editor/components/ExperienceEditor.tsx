@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { appendSuggestionLine, editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionChips, SuggestionInput } from './SmartField'
 
 export const ExperienceEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -23,9 +25,6 @@ export const ExperienceEditor = () => {
           >
             {experience.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addExperience} type="button">
-            Add role
-          </button>
         </div>
       }
     >
@@ -41,21 +40,26 @@ export const ExperienceEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Role</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.role}
+                  suggestions={editorSuggestions.roles}
                   value={item.role}
                   onChange={(event) => updateExperience(item.id, 'role', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>Organization</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.organization}
+                  suggestions={editorSuggestions.organizations}
                   value={item.organization}
                   onChange={(event) => updateExperience(item.id, 'organization', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>Location</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.locationShort}
                   value={item.location}
                   onChange={(event) => updateExperience(item.id, 'location', event.target.value)}
                 />
@@ -70,15 +74,19 @@ export const ExperienceEditor = () => {
               </label>
               <label className="field">
                 <span>Start date</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.date}
+                  suggestions={editorSuggestions.dates}
                   value={item.startDate}
                   onChange={(event) => updateExperience(item.id, 'startDate', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>End date</span>
-                <input
+                <SuggestionInput
                   disabled={item.current}
+                  placeholder="Present or 2026"
+                  suggestions={editorSuggestions.dates}
                   value={item.endDate}
                   onChange={(event) => updateExperience(item.id, 'endDate', event.target.value)}
                 />
@@ -87,6 +95,7 @@ export const ExperienceEditor = () => {
             <label className="field field--stacked">
               <span>Highlights</span>
               <textarea
+                placeholder={editorHints.textarea}
                 rows={4}
                 value={item.highlights.join('\n')}
                 onChange={(event) =>
@@ -98,9 +107,15 @@ export const ExperienceEditor = () => {
                 }
               />
             </label>
+            <SuggestionChips
+              label="Impact bullet starters"
+              suggestions={editorSuggestions.highlightLines}
+              onSelect={(suggestion) => updateExperience(item.id, 'highlights', appendSuggestionLine(item.highlights, suggestion))}
+            />
           </article>
         ))}
       </div>
+      <AddItemButton label="Add experience role" onClick={addExperience} />
     </SectionCard>
   )
 }

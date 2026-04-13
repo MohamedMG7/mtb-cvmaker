@@ -1,6 +1,8 @@
 import { getSection } from '../../../lib/schema/cv'
 import { useCvStore } from '../store/useCvStore'
+import { appendSuggestionLine, editorHints, editorSuggestions } from './editorSuggestions'
 import { SectionCard } from './SectionCard'
+import { AddItemButton, SuggestionChips, SuggestionInput } from './SmartField'
 
 export const VolunteerEditor = () => {
   const document = useCvStore((state) => state.document)
@@ -20,15 +22,17 @@ export const VolunteerEditor = () => {
           <button className="ghost-button" onClick={() => toggleSectionVisibility('volunteer')} type="button">
             {section.visible ? 'Hide section' : 'Show section'}
           </button>
-          <button className="primary-button" onClick={addVolunteer} type="button">
-            Add role
-          </button>
         </div>
       }
     >
       <label className="field">
         <span>Section title</span>
-        <input value={section.title} onChange={(event) => updateSectionTitle('volunteer', event.target.value)} />
+        <SuggestionInput
+          placeholder={editorHints.sectionTitle}
+          suggestions={['Volunteer Experience', 'Community Work']}
+          value={section.title}
+          onChange={(event) => updateSectionTitle('volunteer', event.target.value)}
+        />
       </label>
       <div className="stack-list">
         {section.items.map((item) => (
@@ -42,18 +46,28 @@ export const VolunteerEditor = () => {
             <div className="field-grid field-grid--two">
               <label className="field">
                 <span>Role</span>
-                <input value={item.role} onChange={(event) => updateVolunteer(item.id, 'role', event.target.value)} />
+                <SuggestionInput
+                  placeholder="Mentor or Community Lead"
+                  suggestions={['Mentor', 'Volunteer Coordinator', 'Community Lead', 'Teaching Assistant']}
+                  value={item.role}
+                  onChange={(event) => updateVolunteer(item.id, 'role', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>Organization</span>
-                <input
+                <SuggestionInput
+                  placeholder={editorHints.organization}
                   value={item.organization}
                   onChange={(event) => updateVolunteer(item.id, 'organization', event.target.value)}
                 />
               </label>
               <label className="field">
                 <span>Location</span>
-                <input value={item.location} onChange={(event) => updateVolunteer(item.id, 'location', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.locationShort}
+                  value={item.location}
+                  onChange={(event) => updateVolunteer(item.id, 'location', event.target.value)}
+                />
               </label>
               <label className="field checkbox-field">
                 <input
@@ -65,12 +79,19 @@ export const VolunteerEditor = () => {
               </label>
               <label className="field">
                 <span>Start date</span>
-                <input value={item.startDate} onChange={(event) => updateVolunteer(item.id, 'startDate', event.target.value)} />
+                <SuggestionInput
+                  placeholder={editorHints.date}
+                  suggestions={editorSuggestions.dates}
+                  value={item.startDate}
+                  onChange={(event) => updateVolunteer(item.id, 'startDate', event.target.value)}
+                />
               </label>
               <label className="field">
                 <span>End date</span>
-                <input
+                <SuggestionInput
                   disabled={item.current}
+                  placeholder="Present or 2026"
+                  suggestions={editorSuggestions.dates}
                   value={item.endDate}
                   onChange={(event) => updateVolunteer(item.id, 'endDate', event.target.value)}
                 />
@@ -79,6 +100,7 @@ export const VolunteerEditor = () => {
             <label className="field field--stacked">
               <span>Highlights</span>
               <textarea
+                placeholder={editorHints.textarea}
                 rows={4}
                 value={item.highlights.join('\n')}
                 onChange={(event) =>
@@ -90,9 +112,15 @@ export const VolunteerEditor = () => {
                 }
               />
             </label>
+            <SuggestionChips
+              label="Volunteer impact starters"
+              suggestions={editorSuggestions.highlightLines}
+              onSelect={(suggestion) => updateVolunteer(item.id, 'highlights', appendSuggestionLine(item.highlights, suggestion))}
+            />
           </article>
         ))}
       </div>
+      <AddItemButton label="Add volunteer role" onClick={addVolunteer} />
     </SectionCard>
   )
 }
